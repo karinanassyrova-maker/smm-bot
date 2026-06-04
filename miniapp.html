@@ -611,6 +611,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const niche = localStorage.getItem('smm_niche');
   if (niche) document.getElementById('niche-setting').value = niche;
   renderWorkspace();
+  loadTasks();
+  loadIdeas();
 });
 
 function switchTab(name) {
@@ -618,8 +620,8 @@ function switchTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   event.target.classList.add('active');
-  if (name === 'tasks') renderTasks();
-  if (name === 'ideas') renderIdeas();
+  if (name === 'tasks') loadTasks();
+  if (name === 'ideas') loadIdeas();
 }
 
 function selectTool(id) {
@@ -797,43 +799,75 @@ async function callClaude(prompt, key, system = 'Ты профессиональ
   return data.content[0].text;
 }
 
+// ===== SUPABASE =====
+const SB_URL = 'https://riwjxtjwcnlledvfcqpb.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpd2p4dGp3Y25sbGVkdmZjcXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1ODM1MjksImV4cCI6MjA5NjE1OTUyOX0.jY6lwTVGld6aeHay1eC30O4SLWumZDM_10FhQ1MHn7I';
+
+async function sbGet(table) {
+  const r = await fetch(`${SB_URL}/rest/v1/${table}?order=created_at.desc`, {
+    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+  });
+  return r.ok ? r.json() : [];
+}
+async function sbInsert(table, data) {
+  const r = await fetch(`${SB_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+    body: JSON.stringify(data)
+  });
+  return r.ok ? r.json() : null;
+}
+async function sbUpdate(table, id, data) {
+  await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method: 'PATCH',
+    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+}
+async function sbDelete(table, id) {
+  await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method: 'DELETE',
+    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+  });
+}
+
 // ===== IDEAS =====
-let ideas = JSON.parse(localStorage.getItem('smm_ideas') || '[]');
+let ideas = [];
 let ideaFilter = 'all';
 
-function saveIdeas() { localStorage.setItem('smm_ideas', JSON.stringify(ideas)); }
-
-function addIdea() {
+async function addIdea() {
   const url = document.getElementById('idea-url').value.trim();
   const title = document.getElementById('idea-title').value.trim();
   if (!url && !title) { alert('Добавь ссылку или описание'); return; }
   const tagsRaw = document.getElementById('idea-tags').value.trim();
   const idea = {
-    id: Date.now(),
-    url,
-    title: title || url,
+    url, title: title || url,
     platform: document.getElementById('idea-platform').value,
     type: document.getElementById('idea-type').value,
     tags: tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [],
-    used: false,
-    created: new Date().toISOString()
+    used: false
   };
-  ideas.unshift(idea);
-  saveIdeas();
+  await sbInsert('ideas', idea);
   document.getElementById('idea-url').value = '';
   document.getElementById('idea-title').value = '';
   document.getElementById('idea-tags').value = '';
+  await loadIdeas();
+}
+
+async function loadIdeas() {
+  ideas = await sbGet('ideas');
   renderIdeas();
 }
 
-function toggleIdeaUsed(id) {
+async function toggleIdeaUsed(id) {
   const idea = ideas.find(i => i.id === id);
-  if (idea) { idea.used = !idea.used; saveIdeas(); renderIdeas(); }
+  if (idea) { await sbUpdate('ideas', id, { used: !idea.used }); await loadIdeas(); }
 }
 
-function deleteIdea(id) {
+async function deleteIdea(id) {
+  await sbDelete('ideas', id);
   ideas = ideas.filter(i => i.id !== id);
-  saveIdeas(); renderIdeas();
+  renderIdeas();
 }
 
 function filterIdeas(el, filter) {
@@ -921,41 +955,41 @@ async function analyzeIdea(id) {
 }
 
 // ===== TASKS =====
-let tasks = JSON.parse(localStorage.getItem('smm_tasks') || '[]');
+let tasks = [];
 let taskFilter = 'all';
 
-function saveTasks() { localStorage.setItem('smm_tasks', JSON.stringify(tasks)); }
-
-function addTask() {
+async function addTask() {
   const title = document.getElementById('task-title').value.trim();
   if (!title) { alert('Введи название задачи'); return; }
   const task = {
-    id: Date.now(),
     title,
     priority: document.getElementById('task-priority').value,
     category: document.getElementById('task-category').value,
-    date: document.getElementById('task-date').value,
-    remind: document.getElementById('task-remind').value.trim(),
-    done: false,
-    created: new Date().toISOString()
+    date: document.getElementById('task-date').value || null,
+    remind: document.getElementById('task-remind').value.trim() || null,
+    done: false
   };
-  tasks.unshift(task);
-  saveTasks();
+  await sbInsert('tasks', task);
   document.getElementById('task-title').value = '';
   document.getElementById('task-date').value = '';
   document.getElementById('task-remind').value = '';
+  await loadTasks();
+}
+
+async function loadTasks() {
+  tasks = await sbGet('tasks');
   renderTasks();
-  scheduleReminder(task);
 }
 
-function toggleTask(id) {
+async function toggleTask(id) {
   const t = tasks.find(t => t.id === id);
-  if (t) { t.done = !t.done; saveTasks(); renderTasks(); }
+  if (t) { await sbUpdate('tasks', id, { done: !t.done }); await loadTasks(); }
 }
 
-function deleteTask(id) {
+async function deleteTask(id) {
+  await sbDelete('tasks', id);
   tasks = tasks.filter(t => t.id !== id);
-  saveTasks(); renderTasks();
+  renderTasks();
 }
 
 function filterTasks(el, filter) {
@@ -1015,9 +1049,13 @@ function renderTasks() {
   }).join('');
 }
 
-function scheduleReminder(task) {
-  if (!task.remind || !window.Telegram?.WebApp) return;
-  // Отправляем напоминание через бота — можно расширить на сервере
+function scheduleReminder(task) {}
+
+function filterIdeas(el, filter) {
+  ideaFilter = filter;
+  document.querySelectorAll('#tab-ideas .pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderIdeas();
 }
 
 // Render tasks when switching to tab
