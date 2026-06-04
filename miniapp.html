@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SMM Studio</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Onest:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c27;
+    --border: rgba(255,255,255,0.07);
+    --accent: #7c6ff7;
+    --accent2: #c084fc;
+    --text: #f0effe;
+    --muted: #6b6a85;
+    --success: #34d399;
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Onest', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Ambient glow */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(124,111,247,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app { position: relative; z-index: 1; padding-bottom: 100px; }
+
+  /* Header */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .logo-text { font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: -0.01em; }
+  .logo-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+  .token-badge {
+    font-size: 11px; padding: 4px 10px;
+    background: rgba(124,111,247,0.12); color: var(--accent);
+    border: 1px solid rgba(124,111,247,0.25); border-radius: 20px;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex; gap: 4px;
+    padding: 12px 20px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex-shrink: 0;
+    font-family: 'Onest', sans-serif; font-size: 12px; font-weight: 500;
+    padding: 7px 14px; border-radius: 20px; border: none; cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface2); color: var(--muted);
+  }
+  .tab.active { background: var(--accent); color: white; }
+
+  .panel { display: none; padding: 0 20px; }
+  .panel.active { display: block; }
+
+  /* Tool cards */
+  .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .tool-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; cursor: pointer;
+    transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .tool-card:hover, .tool-card.active-tool {
+    border-color: rgba(124,111,247,0.4);
+    background: rgba(124,111,247,0.06);
+  }
+  .tool-card.active-tool::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+  .tool-emoji { font-size: 22px; margin-bottom: 8px; display: block; }
+  .tool-name { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .tool-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+  /* Workspace */
+  .workspace { margin-top: 20px; }
+  .workspace-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .workspace-title { font-size: 14px; font-weight: 500; color: var(--text); }
+  .platform-pills { display: flex; gap: 6px; }
+  .pill {
+    font-size: 11px; padding: 4px 10px; border-radius: 20px;
+    border: 1px solid var(--border); background: transparent; color: var(--muted);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .pill.active { background: rgba(124,111,247,0.15); border-color: var(--accent); color: var(--accent); }
+
+  textarea, input[type=text] {
+    width: 100%;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 12px; color: var(--text);
+    font-family: 'Onest', sans-serif; font-size: 14px; font-weight: 300;
+    resize: none; outline: none; transition: border-color 0.2s;
+    padding: 14px 16px;
+  }
+  textarea:focus, input:focus { border-color: rgba(124,111,247,0.5); }
+  textarea { min-height: 100px; }
+
+  .input-row { display: flex; gap: 8px; margin-top: 10px; }
+  input[type=text] { flex: 1; }
+
+  .btn-generate {
+    width: 100%; margin-top: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white; border: none; border-radius: 12px;
+    font-family: 'Onest', sans-serif; font-size: 14px; font-weight: 500;
+    padding: 14px; cursor: pointer; transition: opacity 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-generate:hover { opacity: 0.9; }
+  .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-generate .spinner {
+    width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white; border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Result */
+  .result-box {
+    margin-top: 16px; background: var(--surface);
+    border: 1px solid rgba(124,111,247,0.2);
+    border-radius: var(--radius); overflow: hidden;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .result-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+    font-size: 12px; color: var(--muted);
+  }
+  .result-header .success-dot {
+    width: 6px; height: 6px; background: var(--success);
+    border-radius: 50%; display: inline-block; margin-right: 6px;
+  }
+  .result-text {
+    padding: 16px; font-size: 14px; font-weight: 300; line-height: 1.7;
+    white-space: pre-wrap; color: var(--text);
+  }
+  .result-actions { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border); }
+  .btn-action {
+    flex: 1; padding: 9px; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 10px;
+    color: var(--muted); font-family: 'Onest', sans-serif; font-size: 12px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .btn-action:hover { border-color: rgba(124,111,247,0.3); color: var(--text); }
+
+  /* Chat */
+  .chat-wrap { display: flex; flex-direction: column; height: calc(100vh - 180px); }
+  .chat-messages {
+    flex: 1; overflow-y: auto; padding: 16px 0;
+    display: flex; flex-direction: column; gap: 12px;
+    scrollbar-width: thin; scrollbar-color: var(--surface2) transparent;
+  }
+  .msg { max-width: 85%; animation: fadeIn 0.25s ease; }
+  .msg.user { align-self: flex-end; }
+  .msg.ai { align-self: flex-start; }
+  .msg-bubble {
+    padding: 10px 14px; border-radius: 16px; font-size: 14px; font-weight: 300; line-height: 1.6;
+  }
+  .user .msg-bubble { background: var(--accent); color: white; border-bottom-right-radius: 4px; }
+  .ai .msg-bubble { background: var(--surface2); color: var(--text); border-bottom-left-radius: 4px; }
+  .msg-time { font-size: 10px; color: var(--muted); margin-top: 4px; text-align: right; }
+  .ai .msg-time { text-align: left; }
+  .chat-input-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    padding: 12px 20px 20px;
+    background: linear-gradient(transparent, var(--bg) 30%);
+  }
+  .chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
+  .chat-input-row textarea { min-height: 44px; max-height: 120px; border-radius: 14px; padding: 12px 14px; }
+  .btn-send {
+    width: 44px; height: 44px; flex-shrink: 0;
+    background: var(--accent); border: none; border-radius: 12px;
+    color: white; font-size: 18px; cursor: pointer; transition: opacity 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn-send:hover { opacity: 0.85; }
+
+  /* Plans tab */
+  .plan-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+  .plan-day {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 16px;
+  }
+  .plan-day-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .plan-day-title { font-size: 13px; font-weight: 500; }
+  .plan-day-date { font-size: 11px; color: var(--muted); }
+  .plan-post {
+    background: var(--surface2); border-radius: 10px; padding: 10px 12px; margin-bottom: 6px;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .plan-post:last-child { margin-bottom: 0; }
+  .post-platform {
+    font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 10px; flex-shrink: 0;
+    background: rgba(124,111,247,0.15); color: var(--accent);
+  }
+  .post-topic { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+  /* Settings */
+  .settings-section { margin-bottom: 24px; }
+  .settings-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+  .settings-input-wrap { position: relative; }
+  .settings-input-wrap input { padding-right: 44px; }
+  .btn-save-key {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    background: var(--accent); color: white; border: none; border-radius: 8px;
+    font-size: 11px; padding: 5px 10px; cursor: pointer;
+  }
+  .tone-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .tone-btn {
+    padding: 9px; text-align: center; border-radius: 10px; font-size: 12px;
+    background: var(--surface2); border: 1px solid var(--border); color: var(--muted);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .tone-btn.active { background: rgba(124,111,247,0.15); border-color: var(--accent); color: var(--accent); }
+  .niche-input { margin-top: 8px; }
+
+  /* Typing indicator */
+  .typing { display: flex; gap: 4px; align-items: center; padding: 10px 14px; }
+  .typing span {
+    width: 6px; height: 6px; background: var(--muted);
+    border-radius: 50%; animation: bounce 1.2s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">✦</div>
+      <div>
+        <div class="logo-text">SMM Studio</div>
+        <div class="logo-sub">powered by Claude AI</div>
+      </div>
+    </div>
+    <div class="token-badge" id="user-badge">загрузка...</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('tools')">🛠 Инструменты</button>
+    <button class="tab" onclick="switchTab('chat')">💬 Чат с AI</button>
+    <button class="tab" onclick="switchTab('plan')">📅 Контент-план</button>
+    <button class="tab" onclick="switchTab('settings')">⚙️ Настройки</button>
+  </div>
+
+  <!-- TOOLS -->
+  <div class="panel active" id="tab-tools">
+    <div class="tools-grid">
+      <div class="tool-card active-tool" onclick="selectTool('post')">
+        <span class="tool-emoji">✍️</span>
+        <div class="tool-name">Пост</div>
+        <div class="tool-desc">Написать пост для любой соцсети</div>
+      </div>
+      <div class="tool-card" onclick="selectTool('hashtags')">
+        <span class="tool-emoji">#️⃣</span>
+        <div class="tool-name">Хэштеги</div>
+        <div class="tool-desc">Подобрать теги к теме</div>
+      </div>
+      <div class="tool-card" onclick="selectTool('rewrite')">
+        <span class="tool-emoji">🔄</span>
+        <div class="tool-name">Рерайт</div>
+        <div class="tool-desc">Переписать другим стилем</div>
+      </div>
+      <div class="tool-card" onclick="selectTool('caption')">
+        <span class="tool-emoji">📸</span>
+        <div class="tool-name">Подпись</div>
+        <div class="tool-desc">К фото или видео</div>
+      </div>
+      <div class="tool-card" onclick="selectTool('hook')">
+        <span class="tool-emoji">🎣</span>
+        <div class="tool-name">Крючки</div>
+        <div class="tool-desc">Цепляющие первые строки</div>
+      </div>
+      <div class="tool-card" onclick="selectTool('bio')">
+        <span class="tool-emoji">👤</span>
+        <div class="tool-name">Bio профиля</div>
+        <div class="tool-desc">Шапка аккаунта / бренда</div>
+      </div>
+    </div>
+
+    <div class="workspace" id="workspace">
+      <!-- Динамически -->
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="panel" id="tab-chat">
+    <div class="chat-wrap">
+      <div class="chat-messages" id="chat-messages">
+        <div class="msg ai">
+          <div class="msg-bubble">Привет! Я твой SMM-ассистент. Спроси меня что угодно — идеи для контента, анализ конкурентов, стратегия, тренды... 🚀</div>
+          <div class="msg-time">сейчас</div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-input-bar">
+      <div class="chat-input-row">
+        <textarea id="chat-input" placeholder="Спроси про SMM..." rows="1" oninput="autoResize(this)" onkeydown="chatKeydown(event)"></textarea>
+        <button class="btn-send" onclick="sendChat()">↑</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAN -->
+  <div class="panel" id="tab-plan">
+    <div style="margin: 16px 0 12px;">
+      <div class="settings-label">Тема / ниша</div>
+      <input type="text" id="plan-niche" placeholder="Например: фитнес, кофейня, IT-продукт..." style="margin-bottom:10px;">
+      <div class="settings-label">Платформа</div>
+      <div class="platform-pills" id="plan-platforms">
+        <span class="pill active" onclick="togglePlatform(this)">Instagram</span>
+        <span class="pill" onclick="togglePlatform(this)">VK</span>
+        <span class="pill" onclick="togglePlatform(this)">Telegram</span>
+        <span class="pill" onclick="togglePlatform(this)">TikTok</span>
+      </div>
+      <button class="btn-generate" style="margin-top:12px;" onclick="generatePlan()">
+        <span id="plan-btn-text">📅 Сгенерировать план на 7 дней</span>
+      </button>
+    </div>
+    <div class="plan-grid" id="plan-result"></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="panel" id="tab-settings">
+    <div style="height: 16px;"></div>
+    <div class="settings-section">
+      <div class="settings-label">Anthropic API Key</div>
+      <div class="settings-input-wrap">
+        <input type="text" id="api-key-input" placeholder="sk-ant-..." value="">
+        <button class="btn-save-key" onclick="saveKey()">Сохранить</button>
+      </div>
+      <div style="font-size: 11px; color: var(--muted); margin-top: 6px;">Ключ хранится только в этом устройстве</div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">Тон контента</div>
+      <div class="tone-grid" id="tone-grid">
+        <div class="tone-btn active" onclick="selectTone(this, 'friendly')">😊 Дружелюбный</div>
+        <div class="tone-btn" onclick="selectTone(this, 'professional')">💼 Профессиональный</div>
+        <div class="tone-btn" onclick="selectTone(this, 'humorous')">😄 Юмористический</div>
+        <div class="tone-btn" onclick="selectTone(this, 'inspiring')">🔥 Вдохновляющий</div>
+        <div class="tone-btn" onclick="selectTone(this, 'expert')">🎓 Экспертный</div>
+        <div class="tone-btn" onclick="selectTone(this, 'storytelling')">📖 Сторителлинг</div>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">Ваша ниша</div>
+      <input type="text" id="niche-setting" placeholder="Например: beauty, tech, food..." class="niche-input">
+    </div>
+    <div style="padding: 16px; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border);">
+      <div style="font-size: 13px; font-weight: 500; margin-bottom: 6px;">📌 Как подключить API ключ</div>
+      <div style="font-size: 12px; color: var(--muted); line-height: 1.7;">
+        1. Зайди на <span style="color: var(--accent);">console.anthropic.com</span><br>
+        2. API Keys → Create Key<br>
+        3. Вставь ключ выше и сохрани
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// State
+let currentTool = 'post';
+let selectedTone = 'friendly';
+let apiKey = localStorage.getItem('smm_api_key') || '';
+
+const toneMap = {
+  friendly: 'дружелюбный, тёплый',
+  professional: 'профессиональный, деловой',
+  humorous: 'юмористический, с шутками',
+  inspiring: 'вдохновляющий, мотивирующий',
+  expert: 'экспертный, авторитетный',
+  storytelling: 'в формате сторителлинга'
+};
+
+const toolPrompts = {
+  post: (topic, platform) => `Напиши пост для ${platform} на тему: "${topic}". Тон: ${toneMap[selectedTone]}. Добавь эмодзи, призыв к действию и 5-7 хэштегов в конце.`,
+  hashtags: (topic) => `Подбери 20 хэштегов для публикации на тему: "${topic}". Разбей на группы: высокочастотные (5), среднечастотные (10), низкочастотные (5). Тема ниши: ${localStorage.getItem('smm_niche') || 'общая'}`,
+  rewrite: (text) => `Перепиши этот текст в тоне "${toneMap[selectedTone]}", сохрани смысл, улучши вовлечённость: "${text}"`,
+  caption: (desc, platform) => `Напиши цепляющую подпись для ${platform} к фото/видео: "${desc}". Тон: ${toneMap[selectedTone]}. Добавь эмодзи и CTA.`,
+  hook: (topic) => `Придумай 5 цепляющих первых строк (крючков) для поста на тему: "${topic}". Каждый — другой тип: вопрос, факт, провокация, история, цитата.`,
+  bio: (info) => `Напиши bio/шапку профиля для: "${info}". Дай 3 варианта: краткое (до 80 символов), среднее (до 150), развёрнутое (до 300).`
+};
+
+const toolConfigs = {
+  post: { label: 'О чём пост?', placeholder: 'Тема поста...', hasTarget: true, targetLabel: 'Платформа' },
+  hashtags: { label: 'Тема или текст поста', placeholder: 'Введи тему...' },
+  rewrite: { label: 'Текст для рерайта', placeholder: 'Вставь текст...', isTextarea: true },
+  caption: { label: 'Опиши фото/видео', placeholder: 'Что на фото?', hasTarget: true, targetLabel: 'Платформа' },
+  hook: { label: 'Тема', placeholder: 'Тема поста...' },
+  bio: { label: 'Аккаунт или бренд', placeholder: 'Кто вы / чем занимаетесь...' }
+};
+
+const platforms = ['Instagram', 'VK', 'Telegram', 'TikTok', 'LinkedIn'];
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.Telegram?.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand();
+    const user = window.Telegram.WebApp.initDataUnsafe?.user;
+    document.getElementById('user-badge').textContent = user ? `@${user.username || user.first_name}` : 'Гость';
+  } else {
+    document.getElementById('user-badge').textContent = 'Preview';
+  }
+  if (apiKey) document.getElementById('api-key-input').value = apiKey;
+  const niche = localStorage.getItem('smm_niche');
+  if (niche) document.getElementById('niche-setting').value = niche;
+  renderWorkspace();
+});
+
+function switchTab(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function selectTool(id) {
+  currentTool = id;
+  document.querySelectorAll('.tool-card').forEach(c => c.classList.remove('active-tool'));
+  event.currentTarget.classList.add('active-tool');
+  renderWorkspace();
+  document.getElementById('workspace').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function renderWorkspace() {
+  const cfg = toolConfigs[currentTool];
+  const ws = document.getElementById('workspace');
+  const platformOpts = platforms.map((p, i) =>
+    `<span class="pill${i===0?' active':''}" onclick="this.parentNode.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));this.classList.add('active')">${p}</span>`
+  ).join('');
+
+  ws.innerHTML = `
+    <div class="workspace-header">
+      <div class="workspace-title">${cfg.label}</div>
+    </div>
+    ${cfg.isTextarea
+      ? `<textarea id="ws-input" placeholder="${cfg.placeholder}" rows="4"></textarea>`
+      : `<input type="text" id="ws-input" placeholder="${cfg.placeholder}">`}
+    ${cfg.hasTarget ? `<div class="platform-pills" style="margin-top:10px;">${platformOpts}</div>` : ''}
+    <button class="btn-generate" onclick="runTool()" id="tool-btn">
+      <span id="tool-btn-text">✦ Сгенерировать</span>
+    </button>
+    <div id="tool-result"></div>
+  `;
+}
+
+async function runTool() {
+  const input = document.getElementById('ws-input').value.trim();
+  if (!input) { alert('Введи текст!'); return; }
+  const key = localStorage.getItem('smm_api_key');
+  if (!key) { alert('Добавь API ключ в Настройки'); return; }
+
+  const platform = document.querySelector('#workspace .pill.active')?.textContent || 'Instagram';
+  const prompt = toolPrompts[currentTool](input, platform);
+
+  const btn = document.getElementById('tool-btn');
+  const btnText = document.getElementById('tool-btn-text');
+  btn.disabled = true;
+  btnText.innerHTML = '<div class="spinner"></div>';
+
+  try {
+    const res = await callClaude(prompt, key);
+    document.getElementById('tool-result').innerHTML = `
+      <div class="result-box">
+        <div class="result-header">
+          <span><span class="success-dot"></span>Готово</span>
+          <span>${platform}</span>
+        </div>
+        <div class="result-text">${escHtml(res)}</div>
+        <div class="result-actions">
+          <button class="btn-action" onclick="copyText(this, '${escAttr(res)}')">📋 Копировать</button>
+          <button class="btn-action" onclick="shareToTg('${escAttr(res)}')">📤 В Telegram</button>
+        </div>
+      </div>
+    `;
+  } catch(e) {
+    document.getElementById('tool-result').innerHTML = `<div style="color:#f87171;font-size:13px;margin-top:12px;">${e.message}</div>`;
+  }
+
+  btn.disabled = false;
+  btnText.textContent = '✦ Сгенерировать';
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  const key = localStorage.getItem('smm_api_key');
+  if (!key) { alert('Добавь API ключ в Настройки'); return; }
+
+  addMsg('user', text);
+  input.value = '';
+  input.style.height = 'auto';
+
+  const typing = addTyping();
+
+  try {
+    const niche = localStorage.getItem('smm_niche') || '';
+    const sys = `Ты профессиональный SMM-специалист и контент-стратег. Помогаешь с созданием контента, стратегией продвижения в соцсетях, анализом аудитории. ${niche ? `Ниша клиента: ${niche}.` : ''} Отвечай на русском, по делу, с конкретными советами.`;
+    const res = await callClaude(text, key, sys);
+    typing.remove();
+    addMsg('ai', res);
+  } catch(e) {
+    typing.remove();
+    addMsg('ai', '⚠️ ' + e.message);
+  }
+}
+
+function addMsg(role, text) {
+  const msgs = document.getElementById('chat-messages');
+  const time = new Date().toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' });
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = `<div class="msg-bubble">${escHtml(text)}</div><div class="msg-time">${time}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function addTyping() {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.innerHTML = `<div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+async function generatePlan() {
+  const niche = document.getElementById('plan-niche').value.trim() || 'общая тема';
+  const platforms_sel = [...document.querySelectorAll('#plan-platforms .pill.active')].map(p => p.textContent);
+  const key = localStorage.getItem('smm_api_key');
+  if (!key) { alert('Добавь API ключ в Настройки'); return; }
+
+  document.getElementById('plan-btn-text').textContent = '⏳ Генерирую...';
+  document.querySelector('#tab-plan .btn-generate').disabled = true;
+
+  const prompt = `Составь контент-план на 7 дней для ниши "${niche}" для платформ: ${platforms_sel.join(', ')}. 
+Формат: JSON массив из 7 объектов. Каждый: {"day": "Пн 9 июня", "posts": [{"platform": "...", "topic": "краткая тема поста (до 60 символов)"}]}.
+Только JSON, без пояснений.`;
+
+  try {
+    const res = await callClaude(prompt, key);
+    const clean = res.replace(/```json|```/g, '').trim();
+    const days = JSON.parse(clean);
+    renderPlan(days);
+  } catch(e) {
+    document.getElementById('plan-result').innerHTML = `<div style="color:#f87171;font-size:13px;">${e.message}</div>`;
+  }
+
+  document.getElementById('plan-btn-text').textContent = '📅 Сгенерировать план на 7 дней';
+  document.querySelector('#tab-plan .btn-generate').disabled = false;
+}
+
+function renderPlan(days) {
+  const colors = { Instagram: '#c084fc', VK: '#7c6ff7', Telegram: '#38bdf8', TikTok: '#34d399', LinkedIn: '#60a5fa' };
+  document.getElementById('plan-result').innerHTML = days.map(d => `
+    <div class="plan-day">
+      <div class="plan-day-header">
+        <div class="plan-day-title">📅 ${d.day}</div>
+      </div>
+      ${d.posts.map(p => `
+        <div class="plan-post">
+          <span class="post-platform" style="background:${colors[p.platform] || '#7c6ff7'}22;color:${colors[p.platform] || '#7c6ff7'}">${p.platform}</span>
+          <span class="post-topic">${escHtml(p.topic)}</span>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+async function callClaude(prompt, key, system = 'Ты профессиональный SMM-специалист. Отвечай на русском.') {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}));
+    throw new Error(err.error?.message || `Ошибка API: ${r.status}`);
+  }
+  const data = await r.json();
+  return data.content[0].text;
+}
+
+// Helpers
+function togglePlatform(el) {
+  el.classList.toggle('active');
+}
+function selectTone(el, tone) {
+  selectedTone = tone;
+  document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+function saveKey() {
+  const val = document.getElementById('api-key-input').value.trim();
+  localStorage.setItem('smm_api_key', val);
+  apiKey = val;
+  const niche = document.getElementById('niche-setting').value.trim();
+  if (niche) localStorage.setItem('smm_niche', niche);
+  alert('Сохранено ✓');
+}
+function copyText(btn, text) {
+  navigator.clipboard.writeText(text).then(() => { btn.textContent = '✅ Скопировано'; setTimeout(() => btn.textContent = '📋 Копировать', 2000); });
+}
+function shareToTg(text) {
+  if (window.Telegram?.WebApp) window.Telegram.WebApp.close();
+}
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+function chatKeydown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+}
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) {
+  return s.replace(/'/g, '&#39;').replace(/\n/g, '\\n');
+}
+</script>
+</body>
+</html>
