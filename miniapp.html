@@ -250,6 +250,82 @@
   .tone-btn.active { background: rgba(124,111,247,0.15); border-color: var(--accent); color: var(--accent); }
   .niche-input { margin-top: 8px; }
 
+  /* Ideas board */
+  .idea-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 10px;
+    overflow: hidden; animation: fadeIn 0.2s ease;
+    transition: border-color 0.15s;
+  }
+  .idea-card:hover { border-color: rgba(124,111,247,0.3); }
+  .idea-card.used { opacity: 0.5; }
+  .idea-preview {
+    width: 100%; height: 54px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; letter-spacing: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .idea-preview.instagram { background: linear-gradient(135deg,rgba(131,58,180,0.15),rgba(253,29,29,0.1),rgba(252,176,69,0.1)); }
+  .idea-preview.tiktok { background: rgba(0,0,0,0.3); }
+  .idea-preview.youtube { background: rgba(255,0,0,0.08); }
+  .idea-preview.vk { background: rgba(0,119,255,0.08); }
+  .idea-preview.telegram { background: rgba(0,136,204,0.08); }
+  .idea-preview.other { background: var(--surface2); }
+  .idea-body { padding: 12px 14px; }
+  .idea-title { font-size: 13px; font-weight: 500; margin-bottom: 6px; line-height: 1.4; }
+  .idea-url-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .idea-url-text { font-size: 11px; color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; cursor: pointer; }
+  .idea-tags-row { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; }
+  .idea-tag { font-size: 10px; padding: 2px 7px; border-radius: 8px; background: rgba(124,111,247,0.1); color: var(--accent); }
+  .idea-actions { display: flex; gap: 6px; }
+  .idea-btn {
+    flex: 1; padding: 7px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--muted); font-family: 'Onest',sans-serif;
+    font-size: 11px; cursor: pointer; transition: all 0.15s; text-align: center;
+  }
+  .idea-btn:hover { color: var(--text); border-color: rgba(124,111,247,0.3); }
+  .idea-btn.used-btn { color: var(--success); border-color: rgba(52,211,153,0.3); }
+  .ideas-empty { text-align:center; padding:40px 20px; color:var(--muted); font-size:14px; }
+  .ideas-count { font-size:12px; color:var(--muted); margin-bottom:10px; }
+  .task-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px;
+    display: flex; gap: 12px; align-items: flex-start;
+    animation: fadeIn 0.2s ease; transition: opacity 0.2s;
+  }
+  .task-item.done { opacity: 0.45; }
+  .task-check {
+    width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--muted);
+    flex-shrink: 0; cursor: pointer; margin-top: 2px; display: flex;
+    align-items: center; justify-content: center; transition: all 0.15s;
+  }
+  .task-item.done .task-check { background: var(--success); border-color: var(--success); }
+  .task-body { flex: 1; min-width: 0; }
+  .task-title-text { font-size: 14px; font-weight: 500; margin-bottom: 5px; line-height: 1.3; }
+  .task-item.done .task-title-text { text-decoration: line-through; }
+  .task-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .task-badge {
+    font-size: 10px; padding: 2px 8px; border-radius: 10px;
+    background: var(--surface2); color: var(--muted); border: 1px solid var(--border);
+  }
+  .task-badge.high { background: rgba(239,68,68,0.1); color: #f87171; border-color: rgba(239,68,68,0.2); }
+  .task-badge.medium { background: rgba(251,191,36,0.1); color: #fbbf24; border-color: rgba(251,191,36,0.2); }
+  .task-badge.low { background: rgba(52,211,153,0.1); color: #34d399; border-color: rgba(52,211,153,0.2); }
+  .task-badge.overdue { background: rgba(239,68,68,0.15); color: #f87171; }
+  .task-remind-badge { font-size: 10px; color: var(--accent); }
+  .task-delete { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 2px; flex-shrink: 0; }
+  .task-delete:hover { color: #f87171; }
+  .tasks-empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 14px; }
+  .tasks-stats {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 16px;
+  }
+  .stat-mini {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px; text-align: center;
+  }
+  .stat-mini-num { font-size: 22px; font-weight: 600; color: var(--accent); }
+  .stat-mini-label { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
   /* Typing indicator */
   .typing { display: flex; gap: 4px; align-items: center; padding: 10px 14px; }
   .typing span {
@@ -279,6 +355,8 @@
     <button class="tab active" onclick="switchTab('tools')">🛠 Инструменты</button>
     <button class="tab" onclick="switchTab('chat')">💬 Чат с AI</button>
     <button class="tab" onclick="switchTab('plan')">📅 Контент-план</button>
+    <button class="tab" onclick="switchTab('tasks')">✅ Задачи</button>
+    <button class="tab" onclick="switchTab('ideas')">💡 Идеи</button>
     <button class="tab" onclick="switchTab('settings')">⚙️ Настройки</button>
   </div>
 
@@ -357,6 +435,93 @@
       </button>
     </div>
     <div class="plan-grid" id="plan-result"></div>
+  </div>
+
+  <!-- TASKS -->
+  <div class="panel" id="tab-tasks">
+    <div style="height:16px;"></div>
+
+    <!-- Add task form -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;">
+      <div class="settings-label" style="margin-bottom:10px;">Новая задача</div>
+      <input type="text" id="task-title" placeholder="Название задачи..." style="margin-bottom:8px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+        <select id="task-priority" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Onest',sans-serif;font-size:13px;padding:10px 12px;outline:none;">
+          <option value="high">🔴 Высокий приоритет</option>
+          <option value="medium" selected>🟡 Средний</option>
+          <option value="low">🟢 Низкий</option>
+        </select>
+        <input type="date" id="task-date" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Onest',sans-serif;font-size:13px;padding:10px 12px;outline:none;">
+      </div>
+      <select id="task-category" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Onest',sans-serif;font-size:13px;padding:10px 12px;outline:none;margin-bottom:10px;">
+        <option value="post">✍️ Написать пост</option>
+        <option value="reels">🎬 Снять Reels</option>
+        <option value="story">📱 Stories</option>
+        <option value="analytics">📊 Аналитика</option>
+        <option value="client">👤 Клиент</option>
+        <option value="other">📌 Другое</option>
+      </select>
+      <input type="text" id="task-remind" placeholder="Напоминание (напр: 09:00 завтра)" style="margin-bottom:10px;">
+      <button class="btn-generate" onclick="addTask()" style="margin-top:0;">+ Добавить задачу</button>
+    </div>
+
+    <!-- Filter pills -->
+    <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
+      <span class="pill active" onclick="filterTasks(this,'all')">Все</span>
+      <span class="pill" onclick="filterTasks(this,'active')">Активные</span>
+      <span class="pill" onclick="filterTasks(this,'done')">Выполненные</span>
+      <span class="pill" onclick="filterTasks(this,'high')">🔴 Срочные</span>
+    </div>
+
+    <!-- Task list -->
+    <div id="task-list"></div>
+  </div>
+
+  <!-- IDEAS -->
+  <div class="panel" id="tab-ideas">
+    <div style="height:16px;"></div>
+
+    <!-- Add idea form -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;">
+      <div class="settings-label" style="margin-bottom:10px;">Добавить идею</div>
+      <input type="text" id="idea-url" placeholder="Вставь ссылку (Instagram, TikTok, YouTube...)" style="margin-bottom:8px;">
+      <input type="text" id="idea-title" placeholder="Описание — что хочешь повторить?" style="margin-bottom:8px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+        <select id="idea-platform" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Onest',sans-serif;font-size:13px;padding:10px 12px;outline:none;">
+          <option value="instagram">📸 Instagram</option>
+          <option value="tiktok">🎵 TikTok</option>
+          <option value="youtube">▶️ YouTube</option>
+          <option value="vk">💙 VK</option>
+          <option value="telegram">✈️ Telegram</option>
+          <option value="other">🔗 Другое</option>
+        </select>
+        <select id="idea-type" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Onest',sans-serif;font-size:13px;padding:10px 12px;outline:none;">
+          <option value="reels">🎬 Reels / видео</option>
+          <option value="photo">📷 Фото</option>
+          <option value="carousel">🗂 Карусель</option>
+          <option value="story">📱 Stories</option>
+          <option value="text">✍️ Текст / пост</option>
+          <option value="design">🎨 Дизайн</option>
+        </select>
+      </div>
+      <input type="text" id="idea-tags" placeholder="Теги через запятую: юмор, lifestyle, распаковка..." style="margin-bottom:10px;">
+      <button class="btn-generate" onclick="addIdea()" style="margin-top:0;">💡 Сохранить идею</button>
+    </div>
+
+    <!-- Search + filters -->
+    <div style="margin-bottom:12px;">
+      <input type="text" id="idea-search" placeholder="🔍 Поиск по описанию или тегам..." oninput="renderIdeas()" style="margin-bottom:8px;">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="pill active" onclick="filterIdeas(this,'all')">Все</span>
+        <span class="pill" onclick="filterIdeas(this,'reels')">🎬 Reels</span>
+        <span class="pill" onclick="filterIdeas(this,'photo')">📷 Фото</span>
+        <span class="pill" onclick="filterIdeas(this,'carousel')">🗂 Карусель</span>
+        <span class="pill" onclick="filterIdeas(this,'story')">📱 Stories</span>
+        <span class="pill" onclick="filterIdeas(this,'done')">✅ Использованные</span>
+      </div>
+    </div>
+
+    <div id="ideas-list"></div>
   </div>
 
   <!-- SETTINGS -->
@@ -453,6 +618,8 @@ function switchTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   event.target.classList.add('active');
+  if (name === 'tasks') renderTasks();
+  if (name === 'ideas') renderIdeas();
 }
 
 function selectTool(id) {
@@ -630,7 +797,233 @@ async function callClaude(prompt, key, system = 'Ты профессиональ
   return data.content[0].text;
 }
 
-// Helpers
+// ===== IDEAS =====
+let ideas = JSON.parse(localStorage.getItem('smm_ideas') || '[]');
+let ideaFilter = 'all';
+
+function saveIdeas() { localStorage.setItem('smm_ideas', JSON.stringify(ideas)); }
+
+function addIdea() {
+  const url = document.getElementById('idea-url').value.trim();
+  const title = document.getElementById('idea-title').value.trim();
+  if (!url && !title) { alert('Добавь ссылку или описание'); return; }
+  const tagsRaw = document.getElementById('idea-tags').value.trim();
+  const idea = {
+    id: Date.now(),
+    url,
+    title: title || url,
+    platform: document.getElementById('idea-platform').value,
+    type: document.getElementById('idea-type').value,
+    tags: tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [],
+    used: false,
+    created: new Date().toISOString()
+  };
+  ideas.unshift(idea);
+  saveIdeas();
+  document.getElementById('idea-url').value = '';
+  document.getElementById('idea-title').value = '';
+  document.getElementById('idea-tags').value = '';
+  renderIdeas();
+}
+
+function toggleIdeaUsed(id) {
+  const idea = ideas.find(i => i.id === id);
+  if (idea) { idea.used = !idea.used; saveIdeas(); renderIdeas(); }
+}
+
+function deleteIdea(id) {
+  ideas = ideas.filter(i => i.id !== id);
+  saveIdeas(); renderIdeas();
+}
+
+function filterIdeas(el, filter) {
+  ideaFilter = filter;
+  document.querySelectorAll('#tab-ideas .pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderIdeas();
+}
+
+const platformEmoji = { instagram:'📸', tiktok:'🎵', youtube:'▶️', vk:'💙', telegram:'✈️', other:'🔗' };
+const typeLabels = { reels:'🎬 Reels', photo:'📷 Фото', carousel:'🗂 Карусель', story:'📱 Story', text:'✍️ Пост', design:'🎨 Дизайн' };
+
+function renderIdeas() {
+  const list = document.getElementById('ideas-list');
+  const search = (document.getElementById('idea-search')?.value || '').toLowerCase();
+
+  let filtered = ideas;
+  if (ideaFilter === 'done') filtered = ideas.filter(i => i.used);
+  else if (ideaFilter !== 'all') filtered = ideas.filter(i => i.type === ideaFilter && !i.used);
+
+  if (search) {
+    filtered = filtered.filter(i =>
+      i.title.toLowerCase().includes(search) ||
+      i.tags.some(t => t.toLowerCase().includes(search))
+    );
+  }
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="ideas-empty">Идей пока нет — добавь первую! 🌟</div>';
+    return;
+  }
+
+  list.innerHTML = `<div class="ideas-count">${filtered.length} идей</div>` + filtered.map(idea => `
+    <div class="idea-card${idea.used ? ' used' : ''}">
+      <div class="idea-preview ${idea.platform}">
+        ${platformEmoji[idea.platform]} ${typeLabels[idea.type] || ''}
+      </div>
+      <div class="idea-body">
+        <div class="idea-title">${escHtml(idea.title)}</div>
+        ${idea.url ? `
+          <div class="idea-url-row">
+            <span class="idea-url-text" onclick="openIdeaUrl('${escAttr(idea.url)}')">${escHtml(idea.url)}</span>
+            <button class="idea-btn" style="flex:0;padding:4px 10px;" onclick="openIdeaUrl('${escAttr(idea.url)}')">↗</button>
+          </div>` : ''}
+        ${idea.tags.length ? `<div class="idea-tags-row">${idea.tags.map(t => `<span class="idea-tag">#${escHtml(t)}</span>`).join('')}</div>` : ''}
+        <div class="idea-actions">
+          <button class="idea-btn${idea.used ? ' used-btn' : ''}" onclick="toggleIdeaUsed(${idea.id})">${idea.used ? '✅ Использована' : '○ Отметить готовой'}</button>
+          <button class="idea-btn" onclick="analyzeIdea(${idea.id})">✦ Разобрать с AI</button>
+          <button class="idea-btn" onclick="deleteIdea(${idea.id})" style="flex:0;padding:7px 10px;">×</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openIdeaUrl(url) {
+  if (window.Telegram?.WebApp) window.Telegram.WebApp.openLink(url);
+  else window.open(url, '_blank');
+}
+
+async function analyzeIdea(id) {
+  const idea = ideas.find(i => i.id === id);
+  if (!idea) return;
+  const key = localStorage.getItem('smm_api_key');
+  if (!key) { alert('Добавь API ключ в Настройки'); return; }
+
+  const prompt = `Я нашла референс для контента: "${idea.title}"${idea.url ? `, ссылка: ${idea.url}` : ''}. Тип: ${typeLabels[idea.type]}, платформа: ${idea.platform}. Помоги мне: 1) Что именно стоит взять из этого референса (идея, структура, подача)? 2) Как адаптировать под мою аудиторию? 3) Дай конкретный план как повторить этот формат.`;
+
+  // Switch to chat and send
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-chat').classList.add('active');
+  document.querySelectorAll('.tab')[1].classList.add('active');
+
+  addMsg('user', `Разбери мой референс: "${idea.title}"`);
+  const typing = addTyping();
+  try {
+    const res = await callClaude(prompt, key, 'Ты профессиональный SMM-стратег. Анализируешь референсы и помогаешь адаптировать контент. Отвечай на русском, структурированно.');
+    typing.remove();
+    addMsg('ai', res);
+  } catch(e) {
+    typing.remove();
+    addMsg('ai', '⚠️ ' + e.message);
+  }
+}
+
+// ===== TASKS =====
+let tasks = JSON.parse(localStorage.getItem('smm_tasks') || '[]');
+let taskFilter = 'all';
+
+function saveTasks() { localStorage.setItem('smm_tasks', JSON.stringify(tasks)); }
+
+function addTask() {
+  const title = document.getElementById('task-title').value.trim();
+  if (!title) { alert('Введи название задачи'); return; }
+  const task = {
+    id: Date.now(),
+    title,
+    priority: document.getElementById('task-priority').value,
+    category: document.getElementById('task-category').value,
+    date: document.getElementById('task-date').value,
+    remind: document.getElementById('task-remind').value.trim(),
+    done: false,
+    created: new Date().toISOString()
+  };
+  tasks.unshift(task);
+  saveTasks();
+  document.getElementById('task-title').value = '';
+  document.getElementById('task-date').value = '';
+  document.getElementById('task-remind').value = '';
+  renderTasks();
+  scheduleReminder(task);
+}
+
+function toggleTask(id) {
+  const t = tasks.find(t => t.id === id);
+  if (t) { t.done = !t.done; saveTasks(); renderTasks(); }
+}
+
+function deleteTask(id) {
+  tasks = tasks.filter(t => t.id !== id);
+  saveTasks(); renderTasks();
+}
+
+function filterTasks(el, filter) {
+  taskFilter = filter;
+  document.querySelectorAll('#tab-tasks .pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderTasks();
+}
+
+const catLabels = { post:'✍️ Пост', reels:'🎬 Reels', story:'📱 Stories', analytics:'📊 Аналитика', client:'👤 Клиент', other:'📌 Другое' };
+const priorityLabels = { high:'🔴 Срочно', medium:'🟡 Средний', low:'🟢 Низкий' };
+
+function renderTasks() {
+  const list = document.getElementById('task-list');
+  let filtered = tasks;
+  if (taskFilter === 'active') filtered = tasks.filter(t => !t.done);
+  else if (taskFilter === 'done') filtered = tasks.filter(t => t.done);
+  else if (taskFilter === 'high') filtered = tasks.filter(t => t.priority === 'high' && !t.done);
+
+  const total = tasks.length;
+  const done = tasks.filter(t => t.done).length;
+  const overdue = tasks.filter(t => !t.done && t.date && new Date(t.date) < new Date()).length;
+
+  const statsHtml = `
+    <div class="tasks-stats">
+      <div class="stat-mini"><div class="stat-mini-num">${total}</div><div class="stat-mini-label">Всего</div></div>
+      <div class="stat-mini"><div class="stat-mini-num" style="color:var(--success)">${done}</div><div class="stat-mini-label">Готово</div></div>
+      <div class="stat-mini"><div class="stat-mini-num" style="color:#f87171">${overdue}</div><div class="stat-mini-label">Просрочено</div></div>
+    </div>
+  `;
+
+  if (!filtered.length) {
+    list.innerHTML = statsHtml + '<div class="tasks-empty">Задач нет 🎉</div>';
+    return;
+  }
+
+  list.innerHTML = statsHtml + filtered.map(t => {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const taskDate = t.date ? new Date(t.date) : null;
+    const isOverdue = taskDate && taskDate < today && !t.done;
+    const dateStr = taskDate ? taskDate.toLocaleDateString('ru', {day:'numeric',month:'short'}) : '';
+    return `
+      <div class="task-item${t.done ? ' done' : ''}">
+        <div class="task-check" onclick="toggleTask(${t.id})">${t.done ? '✓' : ''}</div>
+        <div class="task-body">
+          <div class="task-title-text">${escHtml(t.title)}</div>
+          <div class="task-meta">
+            <span class="task-badge ${t.priority}">${priorityLabels[t.priority]}</span>
+            <span class="task-badge">${catLabels[t.category]}</span>
+            ${dateStr ? `<span class="task-badge${isOverdue?' overdue':''}">${isOverdue?'⚠️ ':''} ${dateStr}</span>` : ''}
+            ${t.remind ? `<span class="task-remind-badge">🔔 ${escHtml(t.remind)}</span>` : ''}
+          </div>
+        </div>
+        <button class="task-delete" onclick="deleteTask(${t.id})">×</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function scheduleReminder(task) {
+  if (!task.remind || !window.Telegram?.WebApp) return;
+  // Отправляем напоминание через бота — можно расширить на сервере
+}
+
+// Render tasks when switching to tab
+const origSwitch = window.switchTab;
+// override switchTab to render tasks
+
 function togglePlatform(el) {
   el.classList.toggle('active');
 }
