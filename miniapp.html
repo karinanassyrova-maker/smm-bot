@@ -3,722 +3,823 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>SMM Studio</title>
+<title>Wonderstage Studio</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Onest:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600&family=Onest:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #13131a;
-    --surface2: #1c1c27;
-    --border: rgba(255,255,255,0.07);
-    --accent: #7c6ff7;
-    --accent2: #c084fc;
-    --text: #f0effe;
-    --muted: #6b6a85;
-    --success: #34d399;
-    --radius: 16px;
-  }
+:root {
+  --bg: #09090f;
+  --s1: #111118;
+  --s2: #1a1a24;
+  --s3: #222230;
+  --border: rgba(255,255,255,0.07);
+  --accent: #7c6ff7;
+  --accent2: #c084fc;
+  --text: #f0effe;
+  --muted: #6b6a85;
+  --success: #34d399;
+  --danger: #f87171;
+  --warn: #fbbf24;
+  --r: 14px;
+  --prod: #7c6ff7;
+  --mkt: #c084fc;
+  --art: #34d399;
+  --typo: #f59e0b;
+  --smm: #38bdf8;
+  --pr: #f472b6;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Onest',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; padding-bottom:80px; }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* NAV */
+.nav { display:flex; gap:3px; padding:10px 12px; overflow-x:auto; scrollbar-width:none; position:sticky; top:0; background:var(--bg); z-index:100; border-bottom:1px solid var(--border); }
+.nav::-webkit-scrollbar { display:none; }
+.nav-btn { flex-shrink:0; font-family:'Onest',sans-serif; font-size:11px; font-weight:500; padding:6px 12px; border-radius:20px; border:none; cursor:pointer; background:var(--s2); color:var(--muted); transition:all 0.2s; white-space:nowrap; }
+.nav-btn.active { background:var(--accent); color:white; }
 
-  body {
-    font-family: 'Onest', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* PANELS */
+.panel { display:none; padding:16px; }
+.panel.active { display:block; }
 
-  /* Ambient glow */
-  body::before {
-    content: '';
-    position: fixed;
-    top: -200px; left: 50%;
-    transform: translateX(-50%);
-    width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(124,111,247,0.12) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
+/* HEADER */
+.app-header { display:flex; align-items:center; justify-content:space-between; padding:16px; border-bottom:1px solid var(--border); }
+.logo { display:flex; align-items:center; gap:10px; }
+.logo-icon { width:32px; height:32px; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:15px; }
+.logo-name { font-family:'Unbounded',sans-serif; font-size:12px; font-weight:600; }
+.logo-sub { font-size:10px; color:var(--muted); }
+.user-tag { font-size:11px; padding:4px 10px; background:rgba(124,111,247,0.12); color:var(--accent); border:1px solid rgba(124,111,247,0.25); border-radius:20px; }
 
-  .app { position: relative; z-index: 1; padding-bottom: 100px; }
+/* CARDS */
+.card { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); padding:14px; margin-bottom:10px; }
+.card-title { font-size:13px; font-weight:500; margin-bottom:4px; }
+.card-sub { font-size:11px; color:var(--muted); }
 
-  /* Header */
-  .header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 20px 20px 16px;
-    border-bottom: 1px solid var(--border);
-  }
-  .logo { display: flex; align-items: center; gap: 10px; }
-  .logo-icon {
-    width: 34px; height: 34px; border-radius: 10px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-  }
-  .logo-text { font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: -0.01em; }
-  .logo-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
-  .token-badge {
-    font-size: 11px; padding: 4px 10px;
-    background: rgba(124,111,247,0.12); color: var(--accent);
-    border: 1px solid rgba(124,111,247,0.25); border-radius: 20px;
-  }
+/* DASHBOARD */
+.dash-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+.dash-stat { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); padding:14px; text-align:center; }
+.dash-num { font-size:28px; font-weight:600; color:var(--accent); }
+.dash-label { font-size:10px; color:var(--muted); margin-top:2px; }
+.dash-num.danger { color:var(--danger); }
+.dash-num.warn { color:var(--warn); }
+.dash-num.success { color:var(--success); }
 
-  /* Tabs */
-  .tabs {
-    display: flex; gap: 4px;
-    padding: 12px 20px;
-    overflow-x: auto; scrollbar-width: none;
-  }
-  .tabs::-webkit-scrollbar { display: none; }
-  .tab {
-    flex-shrink: 0;
-    font-family: 'Onest', sans-serif; font-size: 12px; font-weight: 500;
-    padding: 7px 14px; border-radius: 20px; border: none; cursor: pointer;
-    transition: all 0.2s;
-    background: var(--surface2); color: var(--muted);
-  }
-  .tab.active { background: var(--accent); color: white; }
+.section-title { font-size:11px; color:var(--muted); font-weight:500; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px; margin-top:16px; }
 
-  .panel { display: none; padding: 0 20px; }
-  .panel.active { display: block; }
+/* DEPT PILLS */
+.dept-pills { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+.dept-pill { font-size:11px; padding:5px 12px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; transition:all 0.15s; }
+.dept-pill.active { color:white; border-color:transparent; }
+.dept-pill[data-dept="all"].active { background:var(--accent); }
+.dept-pill[data-dept="prod"].active { background:var(--prod); }
+.dept-pill[data-dept="mkt"].active { background:var(--mkt); }
+.dept-pill[data-dept="art"].active { background:var(--art); color:#000; }
+.dept-pill[data-dept="typo"].active { background:var(--typo); color:#000; }
 
-  /* Tool cards */
-  .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-  .tool-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 16px; cursor: pointer;
-    transition: all 0.2s; position: relative; overflow: hidden;
-  }
-  .tool-card:hover, .tool-card.active-tool {
-    border-color: rgba(124,111,247,0.4);
-    background: rgba(124,111,247,0.06);
-  }
-  .tool-card.active-tool::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-  }
-  .tool-emoji { font-size: 22px; margin-bottom: 8px; display: block; }
-  .tool-name { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
-  .tool-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+/* TASK ITEMS */
+.task-item { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); padding:12px 14px; margin-bottom:8px; display:flex; gap:10px; align-items:flex-start; transition:opacity 0.2s; }
+.task-item.done { opacity:0.4; }
+.task-check { width:20px; height:20px; border-radius:6px; border:1.5px solid var(--muted); flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:11px; transition:all 0.15s; margin-top:1px; }
+.task-item.done .task-check { background:var(--success); border-color:var(--success); }
+.task-body { flex:1; min-width:0; }
+.task-title { font-size:13px; font-weight:500; line-height:1.3; margin-bottom:5px; }
+.task-item.done .task-title { text-decoration:line-through; }
+.task-meta { display:flex; gap:5px; flex-wrap:wrap; }
+.tbadge { font-size:10px; padding:2px 7px; border-radius:8px; background:var(--s2); color:var(--muted); }
+.tbadge.high { background:rgba(248,113,113,0.12); color:var(--danger); }
+.tbadge.medium { background:rgba(251,191,36,0.12); color:var(--warn); }
+.tbadge.low { background:rgba(52,211,153,0.1); color:var(--success); }
+.tbadge.overdue { background:rgba(248,113,113,0.2); color:var(--danger); font-weight:500; }
+.tbadge.prod { background:rgba(124,111,247,0.15); color:var(--prod); }
+.tbadge.mkt { background:rgba(192,132,252,0.15); color:var(--mkt); }
+.tbadge.art { background:rgba(52,211,153,0.12); color:var(--art); }
+.tbadge.typo { background:rgba(245,158,11,0.12); color:var(--typo); }
+.task-del { background:none; border:none; color:var(--muted); cursor:pointer; font-size:16px; flex-shrink:0; }
 
-  /* Workspace */
-  .workspace { margin-top: 20px; }
-  .workspace-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  .workspace-title { font-size: 14px; font-weight: 500; color: var(--text); }
-  .platform-pills { display: flex; gap: 6px; }
-  .pill {
-    font-size: 11px; padding: 4px 10px; border-radius: 20px;
-    border: 1px solid var(--border); background: transparent; color: var(--muted);
-    cursor: pointer; transition: all 0.15s;
-  }
-  .pill.active { background: rgba(124,111,247,0.15); border-color: var(--accent); color: var(--accent); }
+/* FORMS */
+input[type=text], input[type=date], input[type=number], input[type=email], textarea, select {
+  width:100%; background:var(--s2); border:1px solid var(--border); border-radius:10px;
+  color:var(--text); font-family:'Onest',sans-serif; font-size:13px; padding:11px 13px;
+  outline:none; transition:border-color 0.2s; margin-bottom:8px;
+}
+input:focus, textarea:focus, select:focus { border-color:rgba(124,111,247,0.5); }
+textarea { resize:none; min-height:80px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 
-  textarea, input[type=text] {
-    width: 100%;
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 12px; color: var(--text);
-    font-family: 'Onest', sans-serif; font-size: 14px; font-weight: 300;
-    resize: none; outline: none; transition: border-color 0.2s;
-    padding: 14px 16px;
-  }
-  textarea:focus, input:focus { border-color: rgba(124,111,247,0.5); }
-  textarea { min-height: 100px; }
+.btn-primary { width:100%; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:white; border:none; border-radius:10px; font-family:'Onest',sans-serif; font-size:13px; font-weight:500; padding:12px; cursor:pointer; transition:opacity 0.2s; display:flex; align-items:center; justify-content:center; gap:6px; }
+.btn-primary:hover { opacity:0.9; }
+.btn-primary:disabled { opacity:0.5; cursor:not-allowed; }
+.btn-secondary { background:var(--s2); border:1px solid var(--border); border-radius:10px; color:var(--muted); font-family:'Onest',sans-serif; font-size:12px; padding:8px 14px; cursor:pointer; transition:all 0.15s; }
+.btn-secondary:hover { color:var(--text); border-color:rgba(124,111,247,0.3); }
 
-  .input-row { display: flex; gap: 8px; margin-top: 10px; }
-  input[type=text] { flex: 1; }
+.spinner { width:14px; height:14px; border:2px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
-  .btn-generate {
-    width: 100%; margin-top: 12px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: white; border: none; border-radius: 12px;
-    font-family: 'Onest', sans-serif; font-size: 14px; font-weight: 500;
-    padding: 14px; cursor: pointer; transition: opacity 0.2s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  .btn-generate:hover { opacity: 0.9; }
-  .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
-  .btn-generate .spinner {
-    width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: white; border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* RESULT BOX */
+.result-box { background:var(--s1); border:1px solid rgba(124,111,247,0.25); border-radius:var(--r); margin-top:12px; overflow:hidden; animation:fadeIn 0.3s; }
+.result-head { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid var(--border); font-size:11px; color:var(--muted); }
+.result-dot { width:6px; height:6px; background:var(--success); border-radius:50%; display:inline-block; margin-right:5px; }
+.result-text { padding:14px; font-size:13px; font-weight:300; line-height:1.7; white-space:pre-wrap; }
+.result-actions { display:flex; gap:6px; padding:10px 14px; border-top:1px solid var(--border); }
+.result-btn { flex:1; padding:8px; background:var(--s2); border:1px solid var(--border); border-radius:8px; color:var(--muted); font-family:'Onest',sans-serif; font-size:11px; cursor:pointer; transition:all 0.15s; }
+.result-btn:hover { color:var(--text); }
 
-  /* Result */
-  .result-box {
-    margin-top: 16px; background: var(--surface);
-    border: 1px solid rgba(124,111,247,0.2);
-    border-radius: var(--radius); overflow: hidden;
-    animation: fadeIn 0.3s ease;
-  }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  .result-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 16px; border-bottom: 1px solid var(--border);
-    font-size: 12px; color: var(--muted);
-  }
-  .result-header .success-dot {
-    width: 6px; height: 6px; background: var(--success);
-    border-radius: 50%; display: inline-block; margin-right: 6px;
-  }
-  .result-text {
-    padding: 16px; font-size: 14px; font-weight: 300; line-height: 1.7;
-    white-space: pre-wrap; color: var(--text);
-  }
-  .result-actions { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border); }
-  .btn-action {
-    flex: 1; padding: 9px; background: var(--surface2);
-    border: 1px solid var(--border); border-radius: 10px;
-    color: var(--muted); font-family: 'Onest', sans-serif; font-size: 12px;
-    cursor: pointer; transition: all 0.15s;
-  }
-  .btn-action:hover { border-color: rgba(124,111,247,0.3); color: var(--text); }
+/* CALENDAR */
+.cal-nav-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.cal-nav-btn { background:var(--s2); border:1px solid var(--border); border-radius:8px; color:var(--text); width:30px; height:30px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; }
+.cal-month-label { font-size:14px; font-weight:500; }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+.cal-dn { text-align:center; font-size:9px; color:var(--muted); padding:3px 0; }
+.cal-cell { min-height:48px; background:var(--s1); border:1px solid var(--border); border-radius:8px; padding:3px; cursor:pointer; transition:border-color 0.15s; }
+.cal-cell:hover { border-color:rgba(124,111,247,0.4); }
+.cal-cell.today { border-color:var(--accent); }
+.cal-cell.other { opacity:0.3; }
+.cal-cell.has-overdue { background:rgba(248,113,113,0.07); border-color:rgba(248,113,113,0.3); }
+.cal-d { font-size:10px; font-weight:500; color:var(--text); }
+.cal-cell.today .cal-d { color:var(--accent); }
+.cal-dot { font-size:8px; border-radius:3px; padding:1px 2px; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.cal-dot.high,.cal-dot.overdue { background:rgba(248,113,113,0.2); color:var(--danger); }
+.cal-dot.medium { background:rgba(251,191,36,0.15); color:var(--warn); }
+.cal-dot.low,.cal-dot.done { background:rgba(52,211,153,0.12); color:var(--success); }
 
-  /* Chat */
-  .chat-wrap { display: flex; flex-direction: column; height: calc(100vh - 180px); }
-  .chat-messages {
-    flex: 1; overflow-y: auto; padding: 16px 0;
-    display: flex; flex-direction: column; gap: 12px;
-    scrollbar-width: thin; scrollbar-color: var(--surface2) transparent;
-  }
-  .msg { max-width: 85%; animation: fadeIn 0.25s ease; }
-  .msg.user { align-self: flex-end; }
-  .msg.ai { align-self: flex-start; }
-  .msg-bubble {
-    padding: 10px 14px; border-radius: 16px; font-size: 14px; font-weight: 300; line-height: 1.6;
-  }
-  .user .msg-bubble { background: var(--accent); color: white; border-bottom-right-radius: 4px; }
-  .ai .msg-bubble { background: var(--surface2); color: var(--text); border-bottom-left-radius: 4px; }
-  .msg-time { font-size: 10px; color: var(--muted); margin-top: 4px; text-align: right; }
-  .ai .msg-time { text-align: left; }
-  .chat-input-bar {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    padding: 12px 20px 20px;
-    background: linear-gradient(transparent, var(--bg) 30%);
-  }
-  .chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
-  .chat-input-row textarea { min-height: 44px; max-height: 120px; border-radius: 14px; padding: 12px 14px; }
-  .btn-send {
-    width: 44px; height: 44px; flex-shrink: 0;
-    background: var(--accent); border: none; border-radius: 12px;
-    color: white; font-size: 18px; cursor: pointer; transition: opacity 0.2s;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .btn-send:hover { opacity: 0.85; }
+/* CHAT */
+.chat-msgs { display:flex; flex-direction:column; gap:10px; padding:12px 0; min-height:200px; }
+.msg { max-width:88%; animation:fadeIn 0.2s; }
+.msg.user { align-self:flex-end; }
+.msg.ai { align-self:flex-start; }
+.msg-bubble { padding:10px 13px; border-radius:14px; font-size:13px; font-weight:300; line-height:1.6; }
+.user .msg-bubble { background:var(--accent); color:white; border-bottom-right-radius:4px; }
+.ai .msg-bubble { background:var(--s2); color:var(--text); border-bottom-left-radius:4px; }
+.msg-time { font-size:9px; color:var(--muted); margin-top:3px; }
+.ai .msg-time { text-align:left; }
+.user .msg-time { text-align:right; }
+.chat-input-wrap { display:flex; gap:8px; align-items:flex-end; margin-top:12px; }
+.chat-input-wrap textarea { min-height:42px; max-height:100px; margin-bottom:0; border-radius:12px; }
+.send-btn { width:42px; height:42px; flex-shrink:0; background:var(--accent); border:none; border-radius:10px; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.typing span { width:5px; height:5px; background:var(--muted); border-radius:50%; display:inline-block; animation:bounce 1.2s infinite; margin:0 1px; }
+.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
 
-  /* Plans tab */
-  .plan-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
-  .plan-day {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 14px 16px;
-  }
-  .plan-day-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-  .plan-day-title { font-size: 13px; font-weight: 500; }
-  .plan-day-date { font-size: 11px; color: var(--muted); }
-  .plan-post {
-    background: var(--surface2); border-radius: 10px; padding: 10px 12px; margin-bottom: 6px;
-    display: flex; align-items: flex-start; gap: 10px;
-  }
-  .plan-post:last-child { margin-bottom: 0; }
-  .post-platform {
-    font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 10px; flex-shrink: 0;
-    background: rgba(124,111,247,0.15); color: var(--accent);
-  }
-  .post-topic { font-size: 12px; color: var(--muted); line-height: 1.4; }
+/* TEAM */
+.team-card { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); padding:14px; margin-bottom:10px; }
+.team-avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.team-info { flex:1; }
+.team-name { font-size:14px; font-weight:500; margin-bottom:3px; }
+.team-role { font-size:11px; color:var(--muted); margin-bottom:6px; }
+.team-tags { display:flex; gap:5px; flex-wrap:wrap; }
+.team-tag { font-size:10px; padding:2px 8px; border-radius:8px; background:var(--s2); color:var(--muted); }
+.team-bday { font-size:11px; color:var(--accent); margin-top:4px; }
 
-  /* Settings */
-  .settings-section { margin-bottom: 24px; }
-  .settings-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
-  .settings-input-wrap { position: relative; }
-  .settings-input-wrap input { padding-right: 44px; }
-  .btn-save-key {
-    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-    background: var(--accent); color: white; border: none; border-radius: 8px;
-    font-size: 11px; padding: 5px 10px; cursor: pointer;
-  }
-  .tone-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .tone-btn {
-    padding: 9px; text-align: center; border-radius: 10px; font-size: 12px;
-    background: var(--surface2); border: 1px solid var(--border); color: var(--muted);
-    cursor: pointer; transition: all 0.15s;
-  }
-  .tone-btn.active { background: rgba(124,111,247,0.15); border-color: var(--accent); color: var(--accent); }
-  .niche-input { margin-top: 8px; }
+/* IDEAS */
+.idea-card { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); margin-bottom:8px; overflow:hidden; }
+.idea-platform-bar { height:40px; display:flex; align-items:center; justify-content:center; font-size:20px; gap:6px; border-bottom:1px solid var(--border); }
+.idea-body { padding:10px 13px; }
+.idea-title { font-size:13px; font-weight:500; margin-bottom:4px; }
+.idea-url { font-size:11px; color:var(--accent); cursor:pointer; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.idea-tags { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px; }
+.idea-tag { font-size:10px; padding:2px 7px; border-radius:8px; background:rgba(124,111,247,0.1); color:var(--accent); }
+.idea-actions { display:flex; gap:6px; }
+.idea-btn { flex:1; padding:7px; background:var(--s2); border:1px solid var(--border); border-radius:8px; color:var(--muted); font-family:'Onest',sans-serif; font-size:11px; cursor:pointer; text-align:center; }
 
-  /* Ideas board */
-  .idea-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); margin-bottom: 10px;
-    overflow: hidden; animation: fadeIn 0.2s ease;
-    transition: border-color 0.15s;
-  }
-  .idea-card:hover { border-color: rgba(124,111,247,0.3); }
-  .idea-card.used { opacity: 0.5; }
-  .idea-preview {
-    width: 100%; height: 54px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px; letter-spacing: 4px;
-    border-bottom: 1px solid var(--border);
-  }
-  .idea-preview.instagram { background: linear-gradient(135deg,rgba(131,58,180,0.15),rgba(253,29,29,0.1),rgba(252,176,69,0.1)); }
-  .idea-preview.tiktok { background: rgba(0,0,0,0.3); }
-  .idea-preview.youtube { background: rgba(255,0,0,0.08); }
-  .idea-preview.vk { background: rgba(0,119,255,0.08); }
-  .idea-preview.telegram { background: rgba(0,136,204,0.08); }
-  .idea-preview.other { background: var(--surface2); }
-  .idea-body { padding: 12px 14px; }
-  .idea-title { font-size: 13px; font-weight: 500; margin-bottom: 6px; line-height: 1.4; }
-  .idea-url-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-  .idea-url-text { font-size: 11px; color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; cursor: pointer; }
-  .idea-tags-row { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; }
-  .idea-tag { font-size: 10px; padding: 2px 7px; border-radius: 8px; background: rgba(124,111,247,0.1); color: var(--accent); }
-  .idea-actions { display: flex; gap: 6px; }
-  .idea-btn {
-    flex: 1; padding: 7px; background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 8px; color: var(--muted); font-family: 'Onest',sans-serif;
-    font-size: 11px; cursor: pointer; transition: all 0.15s; text-align: center;
-  }
-  .idea-btn:hover { color: var(--text); border-color: rgba(124,111,247,0.3); }
-  .idea-btn.used-btn { color: var(--success); border-color: rgba(52,211,153,0.3); }
-  .ideas-empty { text-align:center; padding:40px 20px; color:var(--muted); font-size:14px; }
-  .ideas-count { font-size:12px; color:var(--muted); margin-bottom:10px; }
-  .task-item {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px;
-    display: flex; gap: 12px; align-items: flex-start;
-    animation: fadeIn 0.2s ease; transition: opacity 0.2s;
-  }
-  .task-item.done { opacity: 0.45; }
-  .task-check {
-    width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--muted);
-    flex-shrink: 0; cursor: pointer; margin-top: 2px; display: flex;
-    align-items: center; justify-content: center; transition: all 0.15s;
-  }
-  .task-item.done .task-check { background: var(--success); border-color: var(--success); }
-  .task-body { flex: 1; min-width: 0; }
-  .task-title-text { font-size: 14px; font-weight: 500; margin-bottom: 5px; line-height: 1.3; }
-  .task-item.done .task-title-text { text-decoration: line-through; }
-  .task-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-  .task-badge {
-    font-size: 10px; padding: 2px 8px; border-radius: 10px;
-    background: var(--surface2); color: var(--muted); border: 1px solid var(--border);
-  }
-  .task-badge.high { background: rgba(239,68,68,0.1); color: #f87171; border-color: rgba(239,68,68,0.2); }
-  .task-badge.medium { background: rgba(251,191,36,0.1); color: #fbbf24; border-color: rgba(251,191,36,0.2); }
-  .task-badge.low { background: rgba(52,211,153,0.1); color: #34d399; border-color: rgba(52,211,153,0.2); }
-  .task-badge.overdue { background: rgba(239,68,68,0.15); color: #f87171; }
-  .task-remind-badge { font-size: 10px; color: var(--accent); }
-  .task-delete { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 2px; flex-shrink: 0; }
-  .task-delete:hover { color: #f87171; }
-  .tasks-empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 14px; }
-  .tasks-stats {
-    display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 16px;
-  }
-  .stat-mini {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 12px; text-align: center;
-  }
-  .stat-mini-num { font-size: 22px; font-weight: 600; color: var(--accent); }
-  .stat-mini-label { font-size: 10px; color: var(--muted); margin-top: 2px; }
+/* PR */
+.partner-card { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); padding:13px; margin-bottom:8px; }
+.partner-name { font-size:14px; font-weight:500; margin-bottom:3px; }
+.partner-type { font-size:11px; color:var(--muted); margin-bottom:6px; }
+.partner-contact { font-size:12px; color:var(--accent); }
 
-  /* Typing indicator */
-  .typing { display: flex; gap: 4px; align-items: center; padding: 10px 14px; }
-  .typing span {
-    width: 6px; height: 6px; background: var(--muted);
-    border-radius: 50%; animation: bounce 1.2s infinite;
-  }
-  .typing span:nth-child(2) { animation-delay: 0.2s; }
-  .typing span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+/* STATS SUMMARY */
+.dept-summary { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+.dept-card { border-radius:var(--r); padding:12px 14px; border:1px solid transparent; }
+.dept-card.prod { background:rgba(124,111,247,0.1); border-color:rgba(124,111,247,0.2); }
+.dept-card.mkt { background:rgba(192,132,252,0.1); border-color:rgba(192,132,252,0.2); }
+.dept-card.art { background:rgba(52,211,153,0.08); border-color:rgba(52,211,153,0.2); }
+.dept-card.typo { background:rgba(245,158,11,0.08); border-color:rgba(245,158,11,0.2); }
+.dept-card-name { font-size:11px; font-weight:500; margin-bottom:4px; }
+.dept-card.prod .dept-card-name { color:var(--prod); }
+.dept-card.mkt .dept-card-name { color:var(--mkt); }
+.dept-card.art .dept-card-name { color:var(--art); }
+.dept-card.typo .dept-card-name { color:var(--typo); }
+.dept-card-count { font-size:22px; font-weight:600; color:var(--text); }
+.dept-card-sub { font-size:10px; color:var(--muted); margin-top:2px; }
+
+.empty { text-align:center; padding:32px 16px; color:var(--muted); font-size:13px; }
+
+/* TABS inside panels */
+.inner-tabs { display:flex; gap:5px; margin-bottom:14px; flex-wrap:wrap; }
+.inner-tab { font-size:11px; padding:5px 12px; border-radius:16px; background:var(--s2); border:1px solid var(--border); color:var(--muted); cursor:pointer; }
+.inner-tab.active { background:rgba(124,111,247,0.15); border-color:var(--accent); color:var(--accent); }
 </style>
 </head>
 <body>
-<div class="app">
 
-  <div class="header">
-    <div class="logo">
-      <div class="logo-icon">✦</div>
-      <div>
-        <div class="logo-text">SMM Studio</div>
-        <div class="logo-sub">powered by Claude AI</div>
-      </div>
-    </div>
-    <div class="token-badge" id="user-badge">загрузка...</div>
-  </div>
-
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('tools')">🛠 Инструменты</button>
-    <button class="tab" onclick="switchTab('chat')">💬 Чат с AI</button>
-    <button class="tab" onclick="switchTab('plan')">📅 Контент-план</button>
-    <button class="tab" onclick="switchTab('tasks')">✅ Задачи</button>
-    <button class="tab" onclick="switchTab('ideas')">💡 Идеи</button>
-    <button class="tab" onclick="switchTab('settings')">⚙️ Настройки</button>
-  </div>
-
-  <!-- TOOLS -->
-  <div class="panel active" id="tab-tools">
-    <div class="tools-grid">
-      <div class="tool-card active-tool" onclick="selectTool('post')">
-        <span class="tool-emoji">✍️</span>
-        <div class="tool-name">Пост</div>
-        <div class="tool-desc">Написать пост для любой соцсети</div>
-      </div>
-      <div class="tool-card" onclick="selectTool('hashtags')">
-        <span class="tool-emoji">#️⃣</span>
-        <div class="tool-name">Хэштеги</div>
-        <div class="tool-desc">Подобрать теги к теме</div>
-      </div>
-      <div class="tool-card" onclick="selectTool('rewrite')">
-        <span class="tool-emoji">🔄</span>
-        <div class="tool-name">Рерайт</div>
-        <div class="tool-desc">Переписать другим стилем</div>
-      </div>
-      <div class="tool-card" onclick="selectTool('caption')">
-        <span class="tool-emoji">📸</span>
-        <div class="tool-name">Подпись</div>
-        <div class="tool-desc">К фото или видео</div>
-      </div>
-      <div class="tool-card" onclick="selectTool('hook')">
-        <span class="tool-emoji">🎣</span>
-        <div class="tool-name">Крючки</div>
-        <div class="tool-desc">Цепляющие первые строки</div>
-      </div>
-      <div class="tool-card" onclick="selectTool('bio')">
-        <span class="tool-emoji">👤</span>
-        <div class="tool-name">Bio профиля</div>
-        <div class="tool-desc">Шапка аккаунта / бренда</div>
-      </div>
-    </div>
-
-    <div class="workspace" id="workspace">
-      <!-- Динамически -->
+<div class="app-header">
+  <div class="logo">
+    <div class="logo-icon">✦</div>
+    <div>
+      <div class="logo-name">Wonderstage</div>
+      <div class="logo-sub">Операционный центр</div>
     </div>
   </div>
+  <div class="user-tag" id="user-badge">...</div>
+</div>
 
-  <!-- CHAT -->
-  <div class="panel" id="tab-chat">
-    <div class="chat-wrap">
-      <div class="chat-messages" id="chat-messages">
-        <div class="msg ai">
-          <div class="msg-bubble">Привет! Я твой SMM-ассистент. Спроси меня что угодно — идеи для контента, анализ конкурентов, стратегия, тренды... 🚀</div>
-          <div class="msg-time">сейчас</div>
-        </div>
-      </div>
-    </div>
-    <div class="chat-input-bar">
-      <div class="chat-input-row">
-        <textarea id="chat-input" placeholder="Спроси про SMM..." rows="1" oninput="autoResize(this)" onkeydown="chatKeydown(event)"></textarea>
-        <button class="btn-send" onclick="sendChat()">↑</button>
-      </div>
-    </div>
+<div class="nav">
+  <button class="nav-btn active" onclick="switchTab('dashboard')">🏠 Главная</button>
+  <button class="nav-btn" onclick="switchTab('tasks')">✅ Задачи</button>
+  <button class="nav-btn" onclick="switchTab('calendar')">🗓 Календарь</button>
+  <button class="nav-btn" onclick="switchTab('ai')">🤖 AI</button>
+  <button class="nav-btn" onclick="switchTab('smm')">📱 SMM</button>
+  <button class="nav-btn" onclick="switchTab('pr')">📣 PR</button>
+  <button class="nav-btn" onclick="switchTab('team')">👥 Команда</button>
+</div>
+
+<!-- DASHBOARD -->
+<div class="panel active" id="tab-dashboard">
+  <div class="section-title">Сводка</div>
+  <div class="dash-grid">
+    <div class="dash-stat"><div class="dash-num danger" id="d-overdue">—</div><div class="dash-label">Просрочено</div></div>
+    <div class="dash-stat"><div class="dash-num warn" id="d-today">—</div><div class="dash-label">Сегодня</div></div>
+    <div class="dash-stat"><div class="dash-num" id="d-total">—</div><div class="dash-label">Всего активных</div></div>
+    <div class="dash-stat"><div class="dash-num success" id="d-done">—</div><div class="dash-label">Выполнено</div></div>
   </div>
-
-  <!-- PLAN -->
-  <div class="panel" id="tab-plan">
-    <div style="margin: 16px 0 12px;">
-      <div class="settings-label">Тема / ниша</div>
-      <input type="text" id="plan-niche" placeholder="Например: фитнес, кофейня, IT-продукт..." style="margin-bottom:10px;">
-      <div class="settings-label">Платформа</div>
-      <div class="platform-pills" id="plan-platforms">
-        <span class="pill active" onclick="togglePlatform(this)">Instagram</span>
-        <span class="pill" onclick="togglePlatform(this)">VK</span>
-        <span class="pill" onclick="togglePlatform(this)">Telegram</span>
-        <span class="pill" onclick="togglePlatform(this)">TikTok</span>
-      </div>
-      <button class="btn-generate" style="margin-top:12px;" onclick="generatePlan()">
-        <span id="plan-btn-text">📅 Сгенерировать план на 7 дней</span>
-      </button>
-    </div>
-    <div class="plan-grid" id="plan-result"></div>
+  <div class="section-title">По отделам</div>
+  <div class="dept-summary">
+    <div class="dept-card prod"><div class="dept-card-name">Продакшн</div><div class="dept-card-count" id="dd-prod">—</div><div class="dept-card-sub">активных задач</div></div>
+    <div class="dept-card mkt"><div class="dept-card-name">Маркетинг</div><div class="dept-card-count" id="dd-mkt">—</div><div class="dept-card-sub">активных задач</div></div>
+    <div class="dept-card art"><div class="dept-card-name">Артисты</div><div class="dept-card-count" id="dd-art">—</div><div class="dept-card-sub">активных задач</div></div>
+    <div class="dept-card typo"><div class="dept-card-name">Типография</div><div class="dept-card-count" id="dd-typo">—</div><div class="dept-card-sub">активных задач</div></div>
   </div>
+  <div class="section-title">🔴 Горящие задачи</div>
+  <div id="dash-urgent"></div>
+  <div class="section-title">📅 На сегодня</div>
+  <div id="dash-today-list"></div>
+</div>
 
-  <!-- TASKS -->
-  <div class="panel" id="tab-tasks">
-    <div style="height:16px;"></div>
-
-    <!-- Add task form -->
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;">
-      <div class="settings-label" style="margin-bottom:10px;">Новая задача</div>
-      <input type="text" id="task-title" placeholder="Название задачи..." style="margin-bottom:8px;">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-        <select id="task-priority" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Onest',sans-serif;font-size:13px;padding:10px 12px;outline:none;">
-          <option value="high">🔴 Высокий приоритет</option>
-          <option value="medium" selected>🟡 Средний</option>
-          <option value="low">🟢 Низкий</option>
-        </select>
-        <input type="date" id="task-date" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Onest',sans-serif;font-size:13px;padding:10px 12px;outline:none;">
-      </div>
-      <select id="task-category" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Onest',sans-serif;font-size:13px;padding:10px 12px;outline:none;margin-bottom:10px;">
-        <option value="post">✍️ Написать пост</option>
-        <option value="reels">🎬 Снять Reels</option>
-        <option value="story">📱 Stories</option>
-        <option value="analytics">📊 Аналитика</option>
-        <option value="client">👤 Клиент</option>
-        <option value="other">📌 Другое</option>
+<!-- TASKS -->
+<div class="panel" id="tab-tasks">
+  <!-- Add form -->
+  <div class="card" style="margin-bottom:14px;">
+    <div class="section-title" style="margin-top:0;">Новая задача</div>
+    <input type="text" id="t-title" placeholder="Название задачи...">
+    <div class="form-row">
+      <select id="t-dept">
+        <option value="prod">🎬 Продакшн</option>
+        <option value="mkt">📢 Маркетинг</option>
+        <option value="art">🎤 Артисты</option>
+        <option value="typo">🖨 Типография</option>
       </select>
-      <input type="text" id="task-remind" placeholder="Напоминание (напр: 09:00 завтра)" style="margin-bottom:10px;">
-      <button class="btn-generate" onclick="addTask()" style="margin-top:0;">+ Добавить задачу</button>
+      <select id="t-priority">
+        <option value="high">🔴 Срочно</option>
+        <option value="medium" selected>🟡 Средний</option>
+        <option value="low">🟢 Низкий</option>
+      </select>
     </div>
-
-    <!-- Filter pills -->
-    <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
-      <span class="pill active" onclick="filterTasks(this,'all')">Все</span>
-      <span class="pill" onclick="filterTasks(this,'active')">Активные</span>
-      <span class="pill" onclick="filterTasks(this,'done')">Выполненные</span>
-      <span class="pill" onclick="filterTasks(this,'high')">🔴 Срочные</span>
+    <div class="form-row">
+      <input type="date" id="t-date">
+      <input type="text" id="t-assign" placeholder="Исполнитель...">
     </div>
-
-    <!-- Task list -->
-    <div id="task-list"></div>
+    <button class="btn-primary" onclick="addTask()">+ Добавить задачу</button>
   </div>
 
-  <!-- IDEAS -->
-  <div class="panel" id="tab-ideas">
-    <div style="height:16px;"></div>
+  <!-- Filters -->
+  <div class="dept-pills">
+    <span class="dept-pill active" data-dept="all" onclick="filterTasks(this)">Все</span>
+    <span class="dept-pill" data-dept="prod" onclick="filterTasks(this)">Продакшн</span>
+    <span class="dept-pill" data-dept="mkt" onclick="filterTasks(this)">Маркетинг</span>
+    <span class="dept-pill" data-dept="art" onclick="filterTasks(this)">Артисты</span>
+    <span class="dept-pill" data-dept="typo" onclick="filterTasks(this)">Типография</span>
+  </div>
 
-    <!-- Add idea form -->
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;">
-      <div class="settings-label" style="margin-bottom:10px;">Добавить идею</div>
-      <input type="text" id="idea-url" placeholder="Вставь ссылку (Instagram, TikTok, YouTube...)" style="margin-bottom:8px;">
-      <input type="text" id="idea-title" placeholder="Описание — что хочешь повторить?" style="margin-bottom:8px;">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-        <select id="idea-platform" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Onest',sans-serif;font-size:13px;padding:10px 12px;outline:none;">
+  <div id="task-list"></div>
+</div>
+
+<!-- CALENDAR -->
+<div class="panel" id="tab-calendar">
+  <div style="height:8px;"></div>
+  <div class="cal-nav-row">
+    <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+    <div class="cal-month-label" id="cal-label"></div>
+    <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+  </div>
+  <div class="cal-grid" id="cal-grid"></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+    <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)"><div style="width:8px;height:8px;border-radius:2px;background:var(--danger)"></div>Просрочено</div>
+    <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)"><div style="width:8px;height:8px;border-radius:2px;background:var(--warn)"></div>Средний</div>
+    <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)"><div style="width:8px;height:8px;border-radius:2px;background:var(--success)"></div>Выполнено</div>
+  </div>
+</div>
+
+<!-- AI -->
+<div class="panel" id="tab-ai">
+  <div class="inner-tabs">
+    <span class="inner-tab active" onclick="setAiMode(this,'ops')">⚙️ Операционка</span>
+    <span class="inner-tab" onclick="setAiMode(this,'brief')">📋 Бриф</span>
+    <span class="inner-tab" onclick="setAiMode(this,'script')">🎬 Сценарий</span>
+    <span class="inner-tab" onclick="setAiMode(this,'budget')">💰 Бюджет</span>
+    <span class="inner-tab" onclick="setAiMode(this,'free')">💬 Свободный</span>
+  </div>
+  <div id="ai-hint" style="font-size:12px;color:var(--muted);margin-bottom:10px;padding:10px;background:var(--s1);border-radius:10px;border:1px solid var(--border);"></div>
+  <div class="chat-msgs" id="ai-msgs">
+    <div class="msg ai"><div class="msg-bubble">Привет! Я ваш операционный AI-ассистент Wonderstage. Помогу с брифами, сценариями, планами мероприятий, бюджетами и любыми операционными задачами 🎭</div><div class="msg-time">сейчас</div></div>
+  </div>
+  <div class="chat-input-wrap">
+    <textarea id="ai-input" placeholder="Спроси про операционку..." rows="1" oninput="autoResize(this)" onkeydown="aiKeydown(event)"></textarea>
+    <button class="send-btn" onclick="sendAi()">↑</button>
+  </div>
+</div>
+
+<!-- SMM -->
+<div class="panel" id="tab-smm">
+  <div class="inner-tabs">
+    <span class="inner-tab active" onclick="setSmmTab(this,'tools')">🛠 Инструменты</span>
+    <span class="inner-tab" onclick="setSmmTab(this,'plan')">📅 Контент-план</span>
+    <span class="inner-tab" onclick="setSmmTab(this,'ideas')">💡 Идеи</span>
+  </div>
+
+  <!-- SMM TOOLS -->
+  <div id="smm-tools">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+      <div class="card" style="cursor:pointer;" onclick="selectSmmTool('post')">
+        <div style="font-size:20px;margin-bottom:6px;">✍️</div>
+        <div class="card-title">Пост</div>
+        <div class="card-sub">Для любой соцсети</div>
+      </div>
+      <div class="card" style="cursor:pointer;" onclick="selectSmmTool('hashtags')">
+        <div style="font-size:20px;margin-bottom:6px;">#️⃣</div>
+        <div class="card-title">Хэштеги</div>
+        <div class="card-sub">Подобрать теги</div>
+      </div>
+      <div class="card" style="cursor:pointer;" onclick="selectSmmTool('rewrite')">
+        <div style="font-size:20px;margin-bottom:6px;">🔄</div>
+        <div class="card-title">Рерайт</div>
+        <div class="card-sub">Другим стилем</div>
+      </div>
+      <div class="card" style="cursor:pointer;" onclick="selectSmmTool('caption')">
+        <div style="font-size:20px;margin-bottom:6px;">📸</div>
+        <div class="card-title">Подпись</div>
+        <div class="card-sub">К фото/видео</div>
+      </div>
+      <div class="card" style="cursor:pointer;" onclick="selectSmmTool('hook')">
+        <div style="font-size:20px;margin-bottom:6px;">🎣</div>
+        <div class="card-title">Крючки</div>
+        <div class="card-sub">Цепляющие строки</div>
+      </div>
+      <div class="card" style="cursor:pointer;" onclick="selectSmmTool('bio')">
+        <div style="font-size:20px;margin-bottom:6px;">👤</div>
+        <div class="card-title">Bio профиля</div>
+        <div class="card-sub">Шапка аккаунта</div>
+      </div>
+    </div>
+    <div id="smm-workspace"></div>
+  </div>
+
+  <!-- SMM PLAN -->
+  <div id="smm-plan" style="display:none;">
+    <input type="text" id="plan-niche" placeholder="Тема / ниша (например: музыкальные мероприятия)">
+    <div class="dept-pills" id="plan-platforms" style="margin-bottom:10px;">
+      <span class="dept-pill active" onclick="togglePill(this)">Instagram</span>
+      <span class="dept-pill active" onclick="togglePill(this)">Telegram</span>
+      <span class="dept-pill" onclick="togglePill(this)">VK</span>
+      <span class="dept-pill" onclick="togglePill(this)">TikTok</span>
+    </div>
+    <button class="btn-primary" onclick="generatePlan()"><span id="plan-btn-text">📅 Сгенерировать план на 7 дней</span></button>
+    <div id="plan-result" style="margin-top:12px;"></div>
+  </div>
+
+  <!-- SMM IDEAS -->
+  <div id="smm-ideas" style="display:none;">
+    <div class="card" style="margin-bottom:12px;">
+      <input type="text" id="si-url" placeholder="Ссылка (Instagram, TikTok, YouTube...)">
+      <input type="text" id="si-title" placeholder="Что хочешь повторить?">
+      <div class="form-row">
+        <select id="si-platform">
           <option value="instagram">📸 Instagram</option>
           <option value="tiktok">🎵 TikTok</option>
           <option value="youtube">▶️ YouTube</option>
-          <option value="vk">💙 VK</option>
           <option value="telegram">✈️ Telegram</option>
           <option value="other">🔗 Другое</option>
         </select>
-        <select id="idea-type" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Onest',sans-serif;font-size:13px;padding:10px 12px;outline:none;">
-          <option value="reels">🎬 Reels / видео</option>
+        <select id="si-type">
+          <option value="reels">🎬 Reels</option>
           <option value="photo">📷 Фото</option>
-          <option value="carousel">🗂 Карусель</option>
           <option value="story">📱 Stories</option>
-          <option value="text">✍️ Текст / пост</option>
-          <option value="design">🎨 Дизайн</option>
+          <option value="text">✍️ Пост</option>
         </select>
       </div>
-      <input type="text" id="idea-tags" placeholder="Теги через запятую: юмор, lifestyle, распаковка..." style="margin-bottom:10px;">
-      <button class="btn-generate" onclick="addIdea()" style="margin-top:0;">💡 Сохранить идею</button>
+      <input type="text" id="si-tags" placeholder="Теги: юмор, анонс, behind-scenes...">
+      <button class="btn-primary" onclick="addSmmIdea()">💡 Сохранить идею</button>
     </div>
+    <div id="smm-ideas-list"></div>
+  </div>
+</div>
 
-    <!-- Search + filters -->
-    <div style="margin-bottom:12px;">
-      <input type="text" id="idea-search" placeholder="🔍 Поиск по описанию или тегам..." oninput="renderIdeas()" style="margin-bottom:8px;">
-      <div style="display:flex;gap:6px;flex-wrap:wrap;">
-        <span class="pill active" onclick="filterIdeas(this,'all')">Все</span>
-        <span class="pill" onclick="filterIdeas(this,'reels')">🎬 Reels</span>
-        <span class="pill" onclick="filterIdeas(this,'photo')">📷 Фото</span>
-        <span class="pill" onclick="filterIdeas(this,'carousel')">🗂 Карусель</span>
-        <span class="pill" onclick="filterIdeas(this,'story')">📱 Stories</span>
-        <span class="pill" onclick="filterIdeas(this,'done')">✅ Использованные</span>
-      </div>
-    </div>
-
-    <div id="ideas-list"></div>
+<!-- PR -->
+<div class="panel" id="tab-pr">
+  <div class="inner-tabs">
+    <span class="inner-tab active" onclick="setPrTab(this,'texts')">✍️ Тексты</span>
+    <span class="inner-tab" onclick="setPrTab(this,'partners')">🤝 Партнёры</span>
+    <span class="inner-tab" onclick="setPrTab(this,'ideas')">💡 Идеи</span>
   </div>
 
-  <!-- SETTINGS -->
-  <div class="panel" id="tab-settings">
-    <div style="height: 16px;"></div>
-    <div class="settings-section">
-      <div class="settings-label">Anthropic API Key</div>
-      <div class="settings-input-wrap">
-        <input type="text" id="api-key-input" placeholder="sk-ant-..." value="">
-        <button class="btn-save-key" onclick="saveKey()">Сохранить</button>
-      </div>
-      <div style="font-size: 11px; color: var(--muted); margin-top: 6px;">Ключ хранится только в этом устройстве</div>
+  <!-- PR TEXTS -->
+  <div id="pr-texts">
+    <div class="inner-tabs" style="margin-bottom:10px;" id="pr-type-tabs">
+      <span class="inner-tab active" onclick="setPrType(this,'release')">Пресс-релиз</span>
+      <span class="inner-tab" onclick="setPrType(this,'announce')">Анонс</span>
+      <span class="inner-tab" onclick="setPrType(this,'partner')">Партнёрское письмо</span>
+      <span class="inner-tab" onclick="setPrType(this,'comment')">Комментарий СМИ</span>
     </div>
-    <div class="settings-section">
-      <div class="settings-label">Тон контента</div>
-      <div class="tone-grid" id="tone-grid">
-        <div class="tone-btn active" onclick="selectTone(this, 'friendly')">😊 Дружелюбный</div>
-        <div class="tone-btn" onclick="selectTone(this, 'professional')">💼 Профессиональный</div>
-        <div class="tone-btn" onclick="selectTone(this, 'humorous')">😄 Юмористический</div>
-        <div class="tone-btn" onclick="selectTone(this, 'inspiring')">🔥 Вдохновляющий</div>
-        <div class="tone-btn" onclick="selectTone(this, 'expert')">🎓 Экспертный</div>
-        <div class="tone-btn" onclick="selectTone(this, 'storytelling')">📖 Сторителлинг</div>
-      </div>
-    </div>
-    <div class="settings-section">
-      <div class="settings-label">Ваша ниша</div>
-      <input type="text" id="niche-setting" placeholder="Например: beauty, tech, food..." class="niche-input">
-    </div>
-    <div style="padding: 16px; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border);">
-      <div style="font-size: 13px; font-weight: 500; margin-bottom: 6px;">📌 Как подключить API ключ</div>
-      <div style="font-size: 12px; color: var(--muted); line-height: 1.7;">
-        1. Зайди на <span style="color: var(--accent);">console.anthropic.com</span><br>
-        2. API Keys → Create Key<br>
-        3. Вставь ключ выше и сохрани
-      </div>
-    </div>
+    <input type="text" id="pr-topic" placeholder="Тема или мероприятие...">
+    <textarea id="pr-details" placeholder="Детали: дата, место, артисты, ключевые факты..." rows="3"></textarea>
+    <button class="btn-primary" onclick="generatePrText()"><span id="pr-btn-text">✦ Сгенерировать текст</span></button>
+    <div id="pr-result"></div>
   </div>
 
+  <!-- PR PARTNERS -->
+  <div id="pr-partners" style="display:none;">
+    <div class="card" style="margin-bottom:12px;">
+      <input type="text" id="pp-name" placeholder="Название компании / СМИ...">
+      <div class="form-row">
+        <select id="pp-type">
+          <option value="media">📰 СМИ</option>
+          <option value="sponsor">💼 Спонсор</option>
+          <option value="info">📢 Инфопартнёр</option>
+          <option value="venue">🏛 Площадка</option>
+          <option value="other">🤝 Другое</option>
+        </select>
+        <input type="text" id="pp-contact" placeholder="Контакт / ссылка...">
+      </div>
+      <input type="text" id="pp-notes" placeholder="Заметки о сотрудничестве...">
+      <button class="btn-primary" onclick="addPartner()">+ Добавить партнёра</button>
+    </div>
+    <div id="partners-list"></div>
+  </div>
+
+  <!-- PR IDEAS -->
+  <div id="pr-ideas" style="display:none;">
+    <div class="card" style="margin-bottom:12px;">
+      <input type="text" id="pri-title" placeholder="Идея для PR...">
+      <input type="text" id="pri-url" placeholder="Ссылка (опционально)">
+      <input type="text" id="pri-tags" placeholder="Теги: вирусное, коллаборация, медиа...">
+      <button class="btn-primary" onclick="addPrIdea()">💡 Сохранить идею</button>
+    </div>
+    <div id="pr-ideas-list"></div>
+  </div>
+</div>
+
+<!-- TEAM -->
+<div class="panel" id="tab-team">
+  <div class="inner-tabs">
+    <span class="inner-tab active" onclick="setTeamTab(this,'list')">👥 Команда</span>
+    <span class="inner-tab" onclick="setTeamTab(this,'add')">+ Добавить</span>
+  </div>
+
+  <!-- TEAM LIST -->
+  <div id="team-list-view">
+    <div id="team-list"></div>
+  </div>
+
+  <!-- ADD MEMBER -->
+  <div id="team-add-view" style="display:none;">
+    <div class="card">
+      <input type="text" id="tm-name" placeholder="Имя и фамилия">
+      <div class="form-row">
+        <input type="text" id="tm-role" placeholder="Должность / роль">
+        <select id="tm-dept">
+          <option value="prod">🎬 Продакшн</option>
+          <option value="mkt">📢 Маркетинг</option>
+          <option value="art">🎤 Артисты</option>
+          <option value="typo">🖨 Типография</option>
+          <option value="pr">📣 PR</option>
+          <option value="smm">📱 SMM</option>
+          <option value="ops">⚙️ Операционка</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <input type="date" id="tm-bday" placeholder="Дата рождения">
+        <input type="number" id="tm-age" placeholder="Возраст" min="16" max="80">
+      </div>
+      <input type="text" id="tm-drink" placeholder="Любимый напиток ☕🍵🧃">
+      <input type="text" id="tm-contact" placeholder="Telegram / телефон">
+      <button class="btn-primary" onclick="addTeamMember()">+ Добавить в команду</button>
+    </div>
+  </div>
 </div>
 
 <script>
-// State
-let currentTool = 'post';
-let selectedTone = 'friendly';
-let apiKey = localStorage.getItem('smm_api_key') || '';
+// ===== STATE =====
+const SB_URL = 'https://riwjxtjwcnlledvfcqpb.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpd2p4dGp3Y25sbGVkdmZjcXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1ODM1MjksImV4cCI6MjA5NjE1OTUyOX0.jY6lwTVGld6aeHay1eC30O4SLWumZDM_10FhQ1MHn7I';
 
-const toneMap = {
-  friendly: 'дружелюбный, тёплый',
-  professional: 'профессиональный, деловой',
-  humorous: 'юмористический, с шутками',
-  inspiring: 'вдохновляющий, мотивирующий',
-  expert: 'экспертный, авторитетный',
-  storytelling: 'в формате сторителлинга'
-};
+let tasks = [];
+let smmIdeas = JSON.parse(localStorage.getItem('ws_smm_ideas') || '[]');
+let prIdeas = JSON.parse(localStorage.getItem('ws_pr_ideas') || '[]');
+let partners = JSON.parse(localStorage.getItem('ws_partners') || '[]');
+let teamMembers = JSON.parse(localStorage.getItem('ws_team') || '[]');
+let taskFilter = 'all';
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+let aiMode = 'ops';
+let prType = 'release';
+let currentSmmTool = 'post';
 
-const toolPrompts = {
-  post: (topic, platform) => `Напиши пост для ${platform} на тему: "${topic}". Тон: ${toneMap[selectedTone]}. Добавь эмодзи, призыв к действию и 5-7 хэштегов в конце.`,
-  hashtags: (topic) => `Подбери 20 хэштегов для публикации на тему: "${topic}". Разбей на группы: высокочастотные (5), среднечастотные (10), низкочастотные (5). Тема ниши: ${localStorage.getItem('smm_niche') || 'общая'}`,
-  rewrite: (text) => `Перепиши этот текст в тоне "${toneMap[selectedTone]}", сохрани смысл, улучши вовлечённость: "${text}"`,
-  caption: (desc, platform) => `Напиши цепляющую подпись для ${platform} к фото/видео: "${desc}". Тон: ${toneMap[selectedTone]}. Добавь эмодзи и CTA.`,
-  hook: (topic) => `Придумай 5 цепляющих первых строк (крючков) для поста на тему: "${topic}". Каждый — другой тип: вопрос, факт, провокация, история, цитата.`,
-  bio: (info) => `Напиши bio/шапку профиля для: "${info}". Дай 3 варианта: краткое (до 80 символов), среднее (до 150), развёрнутое (до 300).`
-};
+const deptLabels = { prod:'Продакшн', mkt:'Маркетинг', art:'Артисты', typo:'Типография', pr:'PR', smm:'SMM', ops:'Операционка' };
+const prioLabels = { high:'🔴 Срочно', medium:'🟡 Средний', low:'🟢 Низкий' };
+const prioEmoji = { high:'🔴', medium:'🟡', low:'🟢' };
+const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const dayNames = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 
-const toolConfigs = {
-  post: { label: 'О чём пост?', placeholder: 'Тема поста...', hasTarget: true, targetLabel: 'Платформа' },
-  hashtags: { label: 'Тема или текст поста', placeholder: 'Введи тему...' },
-  rewrite: { label: 'Текст для рерайта', placeholder: 'Вставь текст...', isTextarea: true },
-  caption: { label: 'Опиши фото/видео', placeholder: 'Что на фото?', hasTarget: true, targetLabel: 'Платформа' },
-  hook: { label: 'Тема', placeholder: 'Тема поста...' },
-  bio: { label: 'Аккаунт или бренд', placeholder: 'Кто вы / чем занимаетесь...' }
-};
-
-const platforms = ['Instagram', 'VK', 'Telegram', 'TikTok', 'LinkedIn'];
-
-// Init
-document.addEventListener('DOMContentLoaded', () => {
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', async () => {
   if (window.Telegram?.WebApp) {
     window.Telegram.WebApp.ready();
     window.Telegram.WebApp.expand();
-    const user = window.Telegram.WebApp.initDataUnsafe?.user;
-    document.getElementById('user-badge').textContent = user ? `@${user.username || user.first_name}` : 'Гость';
+    const u = window.Telegram.WebApp.initDataUnsafe?.user;
+    document.getElementById('user-badge').textContent = u ? `@${u.username || u.first_name}` : 'Studio';
   } else {
     document.getElementById('user-badge').textContent = 'Preview';
   }
-  if (apiKey) document.getElementById('api-key-input').value = apiKey;
-  const niche = localStorage.getItem('smm_niche');
-  if (niche) document.getElementById('niche-setting').value = niche;
-  renderWorkspace();
-  loadTasks();
-  loadIdeas();
+  await loadTasks();
+  renderDashboard();
+  checkBirthdays();
+  setAiHint();
 });
 
-function switchTab(name) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  event.target.classList.add('active');
-  if (name === 'tasks') loadTasks();
-  if (name === 'ideas') loadIdeas();
-}
-
-function selectTool(id) {
-  currentTool = id;
-  document.querySelectorAll('.tool-card').forEach(c => c.classList.remove('active-tool'));
-  event.currentTarget.classList.add('active-tool');
-  renderWorkspace();
-  document.getElementById('workspace').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-function renderWorkspace() {
-  const cfg = toolConfigs[currentTool];
-  const ws = document.getElementById('workspace');
-  const platformOpts = platforms.map((p, i) =>
-    `<span class="pill${i===0?' active':''}" onclick="this.parentNode.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));this.classList.add('active')">${p}</span>`
-  ).join('');
-
-  ws.innerHTML = `
-    <div class="workspace-header">
-      <div class="workspace-title">${cfg.label}</div>
-    </div>
-    ${cfg.isTextarea
-      ? `<textarea id="ws-input" placeholder="${cfg.placeholder}" rows="4"></textarea>`
-      : `<input type="text" id="ws-input" placeholder="${cfg.placeholder}">`}
-    ${cfg.hasTarget ? `<div class="platform-pills" style="margin-top:10px;">${platformOpts}</div>` : ''}
-    <button class="btn-generate" onclick="runTool()" id="tool-btn">
-      <span id="tool-btn-text">✦ Сгенерировать</span>
-    </button>
-    <div id="tool-result"></div>
-  `;
-}
-
-async function runTool() {
-  const input = document.getElementById('ws-input').value.trim();
-  if (!input) { alert('Введи текст!'); return; }
-  const key = localStorage.getItem('smm_api_key');
-  if (!key) { alert('Добавь API ключ в Настройки'); return; }
-
-  const platform = document.querySelector('#workspace .pill.active')?.textContent || 'Instagram';
-  const prompt = toolPrompts[currentTool](input, platform);
-
-  const btn = document.getElementById('tool-btn');
-  const btnText = document.getElementById('tool-btn-text');
-  btn.disabled = true;
-  btnText.innerHTML = '<div class="spinner"></div>';
-
+// ===== SUPABASE =====
+async function sbGet(table, query='') {
   try {
-    const res = await callClaude(prompt, key);
-    document.getElementById('tool-result').innerHTML = `
-      <div class="result-box">
-        <div class="result-header">
-          <span><span class="success-dot"></span>Готово</span>
-          <span>${platform}</span>
-        </div>
-        <div class="result-text">${escHtml(res)}</div>
-        <div class="result-actions">
-          <button class="btn-action" onclick="copyText(this, '${escAttr(res)}')">📋 Копировать</button>
-          <button class="btn-action" onclick="shareToTg('${escAttr(res)}')">📤 В Telegram</button>
+    const r = await fetch(`${SB_URL}/rest/v1/${table}?order=created_at.desc${query}`, {
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+    });
+    return r.ok ? r.json() : [];
+  } catch { return []; }
+}
+async function sbInsert(table, data) {
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/${table}`, {
+      method: 'POST',
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+      body: JSON.stringify(data)
+    });
+    return r.ok;
+  } catch { return false; }
+}
+async function sbUpdate(table, id, data) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch {}
+}
+async function sbDelete(table, id) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${id}`, {
+      method: 'DELETE',
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+    });
+  } catch {}
+}
+
+// ===== TASKS =====
+async function loadTasks() {
+  tasks = await sbGet('tasks');
+}
+
+async function addTask() {
+  const title = document.getElementById('t-title').value.trim();
+  if (!title) { alert('Введи название задачи'); return; }
+  const dept = document.getElementById('t-dept').value;
+  const priority = document.getElementById('t-priority').value;
+  const date = document.getElementById('t-date').value || null;
+  const assign = document.getElementById('t-assign').value.trim();
+
+  const ok = await sbInsert('tasks', {
+    title, priority, category: dept,
+    date, remind: assign || null, done: false
+  });
+  if (ok) {
+    document.getElementById('t-title').value = '';
+    document.getElementById('t-date').value = '';
+    document.getElementById('t-assign').value = '';
+    await loadTasks();
+    renderTasks();
+    renderDashboard();
+  }
+}
+
+async function toggleTask(id) {
+  const t = tasks.find(x => x.id === id);
+  if (!t) return;
+  await sbUpdate('tasks', id, { done: !t.done });
+  await loadTasks();
+  renderTasks();
+  renderDashboard();
+}
+
+async function deleteTask(id) {
+  await sbDelete('tasks', id);
+  tasks = tasks.filter(t => t.id !== id);
+  renderTasks();
+  renderDashboard();
+}
+
+function filterTasks(el) {
+  taskFilter = el.dataset.dept;
+  document.querySelectorAll('.dept-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderTasks();
+}
+
+function renderTasks() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  let filtered = taskFilter === 'all' ? tasks : tasks.filter(t => t.category === taskFilter);
+  const list = document.getElementById('task-list');
+  if (!filtered.length) { list.innerHTML = '<div class="empty">Задач нет 🎉</div>'; return; }
+
+  list.innerHTML = filtered.map(t => {
+    const d = t.date ? new Date(t.date) : null;
+    d && d.setHours(0,0,0,0);
+    const overdue = d && d < today && !t.done;
+    const dateStr = d ? d.toLocaleDateString('ru', { day:'numeric', month:'short' }) : '';
+    return `<div class="task-item${t.done?' done':''}">
+      <div class="task-check" onclick="toggleTask(${t.id})">${t.done?'✓':''}</div>
+      <div class="task-body">
+        <div class="task-title">${escHtml(t.title)}</div>
+        <div class="task-meta">
+          <span class="tbadge ${t.priority}">${prioLabels[t.priority]||''}</span>
+          <span class="tbadge ${t.category}">${deptLabels[t.category]||t.category}</span>
+          ${dateStr ? `<span class="tbadge${overdue?' overdue':''}">${overdue?'⚠️ ':''}${dateStr}</span>` : ''}
+          ${t.remind ? `<span class="tbadge">👤 ${escHtml(t.remind)}</span>` : ''}
         </div>
       </div>
-    `;
-  } catch(e) {
-    document.getElementById('tool-result').innerHTML = `<div style="color:#f87171;font-size:13px;margin-top:12px;">${e.message}</div>`;
-  }
-
-  btn.disabled = false;
-  btnText.textContent = '✦ Сгенерировать';
+      <button class="task-del" onclick="deleteTask(${t.id})">×</button>
+    </div>`;
+  }).join('');
 }
 
-async function sendChat() {
-  const input = document.getElementById('chat-input');
+// ===== DASHBOARD =====
+function renderDashboard() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const active = tasks.filter(t => !t.done);
+  const done = tasks.filter(t => t.done);
+  const overdue = active.filter(t => t.date && new Date(t.date) < today);
+  const todayTasks = active.filter(t => {
+    if (!t.date) return false;
+    const d = new Date(t.date); d.setHours(0,0,0,0);
+    return d.getTime() === today.getTime();
+  });
+
+  document.getElementById('d-overdue').textContent = overdue.length;
+  document.getElementById('d-today').textContent = todayTasks.length;
+  document.getElementById('d-total').textContent = active.length;
+  document.getElementById('d-done').textContent = done.length;
+
+  ['prod','mkt','art','typo'].forEach(d => {
+    document.getElementById('dd-' + d).textContent = active.filter(t => t.category === d).length;
+  });
+
+  const urgent = active.filter(t => t.priority === 'high' || (t.date && new Date(t.date) < today)).slice(0,5);
+  document.getElementById('dash-urgent').innerHTML = urgent.length
+    ? urgent.map(t => taskMini(t, today)).join('')
+    : '<div class="empty" style="padding:16px">Горящих задач нет 🎉</div>';
+
+  document.getElementById('dash-today-list').innerHTML = todayTasks.length
+    ? todayTasks.map(t => taskMini(t, today)).join('')
+    : '<div class="empty" style="padding:16px">На сегодня задач нет</div>';
+}
+
+function taskMini(t, today) {
+  const d = t.date ? new Date(t.date) : null;
+  if (d) d.setHours(0,0,0,0);
+  const overdue = d && d < today && !t.done;
+  return `<div class="task-item" style="margin-bottom:6px;">
+    <div class="task-check" onclick="toggleTask(${t.id})">${t.done?'✓':''}</div>
+    <div class="task-body">
+      <div class="task-title">${escHtml(t.title)}</div>
+      <div class="task-meta">
+        <span class="tbadge ${t.category}">${deptLabels[t.category]||''}</span>
+        ${overdue ? '<span class="tbadge overdue">⚠️ Просрочено</span>' : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ===== CALENDAR =====
+function changeMonth(dir) {
+  calMonth += dir;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+async function loadAndRenderCalendar() {
+  await loadTasks();
+  renderCalendar();
+}
+
+function renderCalendar() {
+  document.getElementById('cal-label').textContent = monthNames[calMonth] + ' ' + calYear;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const firstDay = new Date(calYear, calMonth, 1);
+  let startDow = firstDay.getDay(); if (startDow === 0) startDow = 7;
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
+
+  const byDate = {};
+  tasks.forEach(t => {
+    if (!t.date) return;
+    const d = t.date.split('T')[0];
+    if (!byDate[d]) byDate[d] = [];
+    byDate[d].push(t);
+  });
+
+  let html = dayNames.map(d => `<div class="cal-dn">${d}</div>`).join('');
+  for (let i = startDow - 1; i > 0; i--) {
+    html += `<div class="cal-cell other"><div class="cal-d">${daysInPrev - i + 1}</div></div>`;
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = calYear + '-' + String(calMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    const cd = new Date(calYear, calMonth, d);
+    const isToday = cd.getTime() === today.getTime();
+    const dt = byDate[ds] || [];
+    const hasOverdue = dt.some(t => !t.done && cd < today);
+    let cls = 'cal-cell' + (isToday ? ' today' : '') + (hasOverdue ? ' has-overdue' : '');
+    const dots = dt.slice(0,2).map(t => {
+      const ov = !t.done && cd < today;
+      return `<div class="cal-dot ${t.done?'done':ov?'overdue':t.priority}">${escHtml(t.title)}</div>`;
+    }).join('');
+    const more = dt.length > 2 ? `<div style="font-size:8px;color:var(--muted)">+${dt.length-2}</div>` : '';
+    html += `<div class="${cls}" onclick="calClick('${ds}')"><div class="cal-d">${d}</div>${dots}${more}</div>`;
+  }
+  const total = Math.ceil((startDow - 1 + daysInMonth) / 7) * 7;
+  for (let i = 1; i <= total - (startDow - 1 + daysInMonth); i++) {
+    html += `<div class="cal-cell other"><div class="cal-d">${i}</div></div>`;
+  }
+  document.getElementById('cal-grid').innerHTML = html;
+}
+
+function calClick(ds) {
+  const dt = tasks.filter(t => t.date && t.date.split('T')[0] === ds);
+  if (!dt.length) return;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const cd = new Date(ds);
+  const lines = dt.map(t => {
+    const ov = !t.done && cd < today ? ' ⚠️' : '';
+    return `${prioEmoji[t.priority]} ${t.title}${ov}${t.done?' ✅':''}`;
+  }).join('\n');
+  alert(new Date(ds).toLocaleDateString('ru',{day:'numeric',month:'long'}) + ':\n\n' + lines);
+}
+
+// ===== AI =====
+const aiHints = {
+  ops: 'Помогу с операционными вопросами: планирование, делегирование, процессы, дедлайны',
+  brief: 'Опиши мероприятие — сгенерирую полный бриф для команды',
+  script: 'Опиши формат и я напишу сценарий мероприятия или видео',
+  budget: 'Опиши проект — составлю смету или помогу с бюджетом',
+  free: 'Свободный режим — спроси что угодно'
+};
+
+function setAiMode(el, mode) {
+  aiMode = mode;
+  document.querySelectorAll('#tab-ai .inner-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  setAiHint();
+}
+function setAiHint() {
+  const el = document.getElementById('ai-hint');
+  if (el) el.textContent = aiHints[aiMode] || '';
+}
+
+const aiSystemPrompts = {
+  ops: 'Ты операционный директор продюсерского центра Wonderstage. Помогаешь с планированием, процессами, делегированием, дедлайнами. Конкретно, по делу, структурированно. Отвечай на русском.',
+  brief: 'Ты опытный продюсер. Создаёшь профессиональные брифы для команды по мероприятиям, проектам, съёмкам. Структура: цель, аудитория, форматы, дедлайны, ответственные, бюджет. Отвечай на русском.',
+  script: 'Ты сценарист и режиссёр. Пишешь сценарии мероприятий, концертов, презентаций, видео. Детально, с хронометражем и ремарками. Отвечай на русском.',
+  budget: 'Ты финансовый директор продюсерского центра. Помогаешь составлять сметы, оптимизировать бюджеты, планировать расходы на мероприятия. Отвечай на русском.',
+  free: 'Ты универсальный AI-ассистент продюсерского центра Wonderstage. Отвечай на русском, профессионально и по делу.'
+};
+
+async function sendAi() {
+  const input = document.getElementById('ai-input');
   const text = input.value.trim();
   if (!text) return;
-  const key = localStorage.getItem('smm_api_key');
-  if (!key) { alert('Добавь API ключ в Настройки'); return; }
+  const key = localStorage.getItem('ws_api_key');
+  if (!key) { alert('Добавь API ключ — напиши /settings в боте'); return; }
 
-  addMsg('user', text);
-  input.value = '';
-  input.style.height = 'auto';
-
-  const typing = addTyping();
+  addAiMsg('user', text);
+  input.value = ''; input.style.height = 'auto';
+  const typing = addAiTyping();
 
   try {
-    const niche = localStorage.getItem('smm_niche') || '';
-    const sys = `Ты профессиональный SMM-специалист и контент-стратег. Помогаешь с созданием контента, стратегией продвижения в соцсетях, анализом аудитории. ${niche ? `Ниша клиента: ${niche}.` : ''} Отвечай на русском, по делу, с конкретными советами.`;
-    const res = await callClaude(text, key, sys);
-    typing.remove();
-    addMsg('ai', res);
-  } catch(e) {
-    typing.remove();
-    addMsg('ai', '⚠️ ' + e.message);
-  }
+    const res = await callClaude(text, key, aiSystemPrompts[aiMode]);
+    typing.remove(); addAiMsg('ai', res);
+  } catch(e) { typing.remove(); addAiMsg('ai', '⚠️ ' + e.message); }
 }
 
-function addMsg(role, text) {
-  const msgs = document.getElementById('chat-messages');
-  const time = new Date().toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' });
+function addAiMsg(role, text) {
+  const msgs = document.getElementById('ai-msgs');
+  const time = new Date().toLocaleTimeString('ru', { hour:'2-digit', minute:'2-digit' });
   const div = document.createElement('div');
   div.className = `msg ${role}`;
   div.innerHTML = `<div class="msg-bubble">${escHtml(text)}</div><div class="msg-time">${time}</div>`;
@@ -726,377 +827,372 @@ function addMsg(role, text) {
   msgs.scrollTop = msgs.scrollHeight;
   return div;
 }
-
-function addTyping() {
-  const msgs = document.getElementById('chat-messages');
+function addAiTyping() {
+  const msgs = document.getElementById('ai-msgs');
   const div = document.createElement('div');
   div.className = 'msg ai';
   div.innerHTML = `<div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
+  msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight;
   return div;
+}
+function aiKeydown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAi(); } }
+
+// ===== SMM =====
+function setSmmTab(el, tab) {
+  document.querySelectorAll('#tab-smm .inner-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('smm-tools').style.display = tab === 'tools' ? 'block' : 'none';
+  document.getElementById('smm-plan').style.display = tab === 'plan' ? 'block' : 'none';
+  document.getElementById('smm-ideas').style.display = tab === 'ideas' ? 'block' : 'none';
+  if (tab === 'ideas') renderSmmIdeas();
+}
+
+const smmToolConfigs = {
+  post: { label:'О чём пост?', ph:'Тема поста...', hasPlatform:true },
+  hashtags: { label:'Тема', ph:'Введи тему...' },
+  rewrite: { label:'Текст для рерайта', ph:'Вставь текст...', isTA:true },
+  caption: { label:'Опиши фото/видео', ph:'Что на фото?', hasPlatform:true },
+  hook: { label:'Тема', ph:'Тема поста...' },
+  bio: { label:'Аккаунт или бренд', ph:'Кто вы / чем занимаетесь...' }
+};
+const platforms = ['Instagram','VK','Telegram','TikTok','LinkedIn'];
+
+function selectSmmTool(id) {
+  currentSmmTool = id;
+  const cfg = smmToolConfigs[id];
+  const plOpts = platforms.map((p,i) =>
+    `<span class="dept-pill${i===0?' active':''}" onclick="document.querySelectorAll('#smm-workspace .dept-pill').forEach(x=>x.classList.remove('active'));this.classList.add('active')">${p}</span>`
+  ).join('');
+  document.getElementById('smm-workspace').innerHTML = `
+    <div class="section-title">${cfg.label}</div>
+    ${cfg.isTA ? `<textarea id="sw-input" placeholder="${cfg.ph}" rows="4"></textarea>` : `<input type="text" id="sw-input" placeholder="${cfg.ph}">`}
+    ${cfg.hasPlatform ? `<div class="dept-pills">${plOpts}</div>` : ''}
+    <button class="btn-primary" onclick="runSmmTool()" id="sw-btn"><span id="sw-btn-text">✦ Сгенерировать</span></button>
+    <div id="sw-result"></div>`;
+}
+
+const smmPrompts = {
+  post: (t,p) => `Напиши пост для ${p} для продюсерского центра Wonderstage на тему: "${t}". Добавь эмодзи, CTA и 5-7 хэштегов.`,
+  hashtags: (t) => `Подбери 20 хэштегов для продюсерского центра на тему: "${t}". Разбей на высокочастотные, средние, низкие.`,
+  rewrite: (t) => `Перепиши текст профессионально для продюсерского центра, улучши вовлечённость: "${t}"`,
+  caption: (t,p) => `Напиши цепляющую подпись для ${p} к фото/видео продюсерского центра: "${t}". Добавь эмодзи и CTA.`,
+  hook: (t) => `Придумай 5 цепляющих первых строк для поста продюсерского центра на тему: "${t}".`,
+  bio: (t) => `Напиши bio/шапку профиля для продюсерского центра: "${t}". Дай 3 варианта разной длины.`
+};
+
+async function runSmmTool() {
+  const input = document.getElementById('sw-input')?.value.trim();
+  if (!input) { alert('Введи текст!'); return; }
+  const key = localStorage.getItem('ws_api_key');
+  if (!key) { alert('Добавь API ключ в настройки'); return; }
+  const platform = document.querySelector('#smm-workspace .dept-pill.active')?.textContent || 'Instagram';
+  const prompt = smmPrompts[currentSmmTool](input, platform);
+  const btn = document.getElementById('sw-btn');
+  document.getElementById('sw-btn-text').innerHTML = '<div class="spinner"></div>';
+  btn.disabled = true;
+  try {
+    const res = await callClaude(prompt, key);
+    document.getElementById('sw-result').innerHTML = `
+      <div class="result-box">
+        <div class="result-head"><span><span class="result-dot"></span>Готово</span><span>${platform}</span></div>
+        <div class="result-text">${escHtml(res)}</div>
+        <div class="result-actions">
+          <button class="result-btn" onclick="copyText(this,'${escAttr(res)}')">📋 Копировать</button>
+        </div>
+      </div>`;
+  } catch(e) {
+    document.getElementById('sw-result').innerHTML = `<div style="color:var(--danger);font-size:12px;margin-top:10px;">${e.message}</div>`;
+  }
+  btn.disabled = false;
+  document.getElementById('sw-btn-text').textContent = '✦ Сгенерировать';
 }
 
 async function generatePlan() {
-  const niche = document.getElementById('plan-niche').value.trim() || 'общая тема';
-  const platforms_sel = [...document.querySelectorAll('#plan-platforms .pill.active')].map(p => p.textContent);
-  const key = localStorage.getItem('smm_api_key');
-  if (!key) { alert('Добавь API ключ в Настройки'); return; }
-
+  const niche = document.getElementById('plan-niche').value.trim() || 'продюсерский центр';
+  const plats = [...document.querySelectorAll('#plan-platforms .dept-pill.active')].map(p => p.textContent);
+  const key = localStorage.getItem('ws_api_key');
+  if (!key) { alert('Добавь API ключ'); return; }
   document.getElementById('plan-btn-text').textContent = '⏳ Генерирую...';
-  document.querySelector('#tab-plan .btn-generate').disabled = true;
-
-  const prompt = `Составь контент-план на 7 дней для ниши "${niche}" для платформ: ${platforms_sel.join(', ')}. 
-Формат: JSON массив из 7 объектов. Каждый: {"day": "Пн 9 июня", "posts": [{"platform": "...", "topic": "краткая тема поста (до 60 символов)"}]}.
-Только JSON, без пояснений.`;
-
+  const prompt = `Составь контент-план на 7 дней для продюсерского центра Wonderstage, ниша: "${niche}", платформы: ${plats.join(', ')}.
+Ответь ТОЛЬКО JSON массив из 7 объектов: [{"day":"Пн 30 июня","posts":[{"platform":"...","topic":"тема поста до 60 символов"}]}]`;
   try {
     const res = await callClaude(prompt, key);
-    const clean = res.replace(/```json|```/g, '').trim();
+    const clean = res.replace(/\`\`\`json|\`\`\`/g,'').trim();
     const days = JSON.parse(clean);
-    renderPlan(days);
+    const colors = { Instagram:'#c084fc', VK:'#7c6ff7', Telegram:'#38bdf8', TikTok:'#34d399' };
+    document.getElementById('plan-result').innerHTML = days.map(d => `
+      <div class="card" style="margin-bottom:8px;">
+        <div style="font-size:12px;font-weight:500;margin-bottom:8px;">📅 ${d.day}</div>
+        ${d.posts.map(p => `<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);">
+          <span style="font-size:10px;padding:2px 8px;border-radius:8px;background:${colors[p.platform]||'#7c6ff7'}22;color:${colors[p.platform]||'#7c6ff7'};flex-shrink:0;">${p.platform}</span>
+          <span style="font-size:12px;color:var(--muted);">${escHtml(p.topic)}</span>
+        </div>`).join('')}
+      </div>`).join('');
   } catch(e) {
-    document.getElementById('plan-result').innerHTML = `<div style="color:#f87171;font-size:13px;">${e.message}</div>`;
+    document.getElementById('plan-result').innerHTML = `<div style="color:var(--danger);font-size:12px;">${e.message}</div>`;
   }
-
   document.getElementById('plan-btn-text').textContent = '📅 Сгенерировать план на 7 дней';
-  document.querySelector('#tab-plan .btn-generate').disabled = false;
 }
 
-function renderPlan(days) {
-  const colors = { Instagram: '#c084fc', VK: '#7c6ff7', Telegram: '#38bdf8', TikTok: '#34d399', LinkedIn: '#60a5fa' };
-  document.getElementById('plan-result').innerHTML = days.map(d => `
-    <div class="plan-day">
-      <div class="plan-day-header">
-        <div class="plan-day-title">📅 ${d.day}</div>
-      </div>
-      ${d.posts.map(p => `
-        <div class="plan-post">
-          <span class="post-platform" style="background:${colors[p.platform] || '#7c6ff7'}22;color:${colors[p.platform] || '#7c6ff7'}">${p.platform}</span>
-          <span class="post-topic">${escHtml(p.topic)}</span>
-        </div>
-      `).join('')}
-    </div>
-  `).join('');
-}
-
-async function callClaude(prompt, key, system = 'Ты профессиональный SMM-специалист. Отвечай на русском.') {
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-5',
-      max_tokens: 1000,
-      system,
-      messages: [{ role: 'user', content: prompt }]
-    })
-  });
-  if (!r.ok) {
-    const err = await r.json().catch(() => ({}));
-    throw new Error(err.error?.message || `Ошибка API: ${r.status}`);
-  }
-  const data = await r.json();
-  return data.content[0].text;
-}
-
-// ===== SUPABASE =====
-const SB_URL = 'https://riwjxtjwcnlledvfcqpb.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpd2p4dGp3Y25sbGVkdmZjcXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1ODM1MjksImV4cCI6MjA5NjE1OTUyOX0.jY6lwTVGld6aeHay1eC30O4SLWumZDM_10FhQ1MHn7I';
-
-async function sbGet(table) {
-  const r = await fetch(`${SB_URL}/rest/v1/${table}?order=created_at.desc`, {
-    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-  });
-  return r.ok ? r.json() : [];
-}
-async function sbInsert(table, data) {
-  const r = await fetch(`${SB_URL}/rest/v1/${table}`, {
-    method: 'POST',
-    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
-    body: JSON.stringify(data)
-  });
-  return r.ok ? r.json() : null;
-}
-async function sbUpdate(table, id, data) {
-  await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${id}`, {
-    method: 'PATCH',
-    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
-}
-async function sbDelete(table, id) {
-  await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${id}`, {
-    method: 'DELETE',
-    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-  });
-}
-
-// ===== IDEAS =====
-let ideas = [];
-let ideaFilter = 'all';
-
-async function addIdea() {
-  const url = document.getElementById('idea-url').value.trim();
-  const title = document.getElementById('idea-title').value.trim();
+function addSmmIdea() {
+  const url = document.getElementById('si-url').value.trim();
+  const title = document.getElementById('si-title').value.trim();
   if (!url && !title) { alert('Добавь ссылку или описание'); return; }
-  const tagsRaw = document.getElementById('idea-tags').value.trim();
-  const idea = {
-    url, title: title || url,
-    platform: document.getElementById('idea-platform').value,
-    type: document.getElementById('idea-type').value,
-    tags: tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [],
-    used: false
-  };
-  await sbInsert('ideas', idea);
-  document.getElementById('idea-url').value = '';
-  document.getElementById('idea-title').value = '';
-  document.getElementById('idea-tags').value = '';
-  await loadIdeas();
+  const tags = document.getElementById('si-tags').value.trim();
+  smmIdeas.unshift({ id: Date.now(), url, title: title||url, platform: document.getElementById('si-platform').value, type: document.getElementById('si-type').value, tags: tags ? tags.split(',').map(t=>t.trim()) : [], used: false });
+  localStorage.setItem('ws_smm_ideas', JSON.stringify(smmIdeas));
+  ['si-url','si-title','si-tags'].forEach(id => document.getElementById(id).value = '');
+  renderSmmIdeas();
 }
 
-async function loadIdeas() {
-  ideas = await sbGet('ideas');
-  renderIdeas();
-}
-
-async function toggleIdeaUsed(id) {
-  const idea = ideas.find(i => i.id === id);
-  if (idea) { await sbUpdate('ideas', id, { used: !idea.used }); await loadIdeas(); }
-}
-
-async function deleteIdea(id) {
-  await sbDelete('ideas', id);
-  ideas = ideas.filter(i => i.id !== id);
-  renderIdeas();
-}
-
-function filterIdeas(el, filter) {
-  ideaFilter = filter;
-  document.querySelectorAll('#tab-ideas .pill').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
-  renderIdeas();
-}
-
-const platformEmoji = { instagram:'📸', tiktok:'🎵', youtube:'▶️', vk:'💙', telegram:'✈️', other:'🔗' };
-const typeLabels = { reels:'🎬 Reels', photo:'📷 Фото', carousel:'🗂 Карусель', story:'📱 Story', text:'✍️ Пост', design:'🎨 Дизайн' };
-
-function renderIdeas() {
-  const list = document.getElementById('ideas-list');
-  const search = (document.getElementById('idea-search')?.value || '').toLowerCase();
-
-  let filtered = ideas;
-  if (ideaFilter === 'done') filtered = ideas.filter(i => i.used);
-  else if (ideaFilter !== 'all') filtered = ideas.filter(i => i.type === ideaFilter && !i.used);
-
-  if (search) {
-    filtered = filtered.filter(i =>
-      i.title.toLowerCase().includes(search) ||
-      i.tags.some(t => t.toLowerCase().includes(search))
-    );
-  }
-
-  if (!filtered.length) {
-    list.innerHTML = '<div class="ideas-empty">Идей пока нет — добавь первую! 🌟</div>';
-    return;
-  }
-
-  list.innerHTML = `<div class="ideas-count">${filtered.length} идей</div>` + filtered.map(idea => `
-    <div class="idea-card${idea.used ? ' used' : ''}">
-      <div class="idea-preview ${idea.platform}">
-        ${platformEmoji[idea.platform]} ${typeLabels[idea.type] || ''}
-      </div>
+function renderSmmIdeas() {
+  const list = document.getElementById('smm-ideas-list');
+  if (!smmIdeas.length) { list.innerHTML = '<div class="empty">Идей пока нет — добавь первую!</div>'; return; }
+  const pe = { instagram:'📸', tiktok:'🎵', youtube:'▶️', telegram:'✈️', other:'🔗' };
+  list.innerHTML = smmIdeas.map(i => `
+    <div class="idea-card${i.used?' done':''}">
+      <div class="idea-platform-bar">${pe[i.platform]||'🔗'}</div>
       <div class="idea-body">
-        <div class="idea-title">${escHtml(idea.title)}</div>
-        ${idea.url ? `
-          <div class="idea-url-row">
-            <span class="idea-url-text" onclick="openIdeaUrl('${escAttr(idea.url)}')">${escHtml(idea.url)}</span>
-            <button class="idea-btn" style="flex:0;padding:4px 10px;" onclick="openIdeaUrl('${escAttr(idea.url)}')">↗</button>
-          </div>` : ''}
-        ${idea.tags.length ? `<div class="idea-tags-row">${idea.tags.map(t => `<span class="idea-tag">#${escHtml(t)}</span>`).join('')}</div>` : ''}
+        <div class="idea-title">${escHtml(i.title)}</div>
+        ${i.url ? `<div class="idea-url" onclick="openUrl('${escAttr(i.url)}')">${escHtml(i.url)}</div>` : ''}
+        ${i.tags.length ? `<div class="idea-tags">${i.tags.map(t=>`<span class="idea-tag">#${escHtml(t)}</span>`).join('')}</div>` : ''}
         <div class="idea-actions">
-          <button class="idea-btn${idea.used ? ' used-btn' : ''}" onclick="toggleIdeaUsed(${idea.id})">${idea.used ? '✅ Использована' : '○ Отметить готовой'}</button>
-          <button class="idea-btn" onclick="analyzeIdea(${idea.id})">✦ Разобрать с AI</button>
-          <button class="idea-btn" onclick="deleteIdea(${idea.id})" style="flex:0;padding:7px 10px;">×</button>
+          <button class="idea-btn" onclick="toggleSmmIdea(${i.id})">${i.used?'✅ Использована':'○ Готово'}</button>
+          <button class="idea-btn" onclick="deleteSmmIdea(${i.id})">× Удалить</button>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-function openIdeaUrl(url) {
-  if (window.Telegram?.WebApp) window.Telegram.WebApp.openLink(url);
-  else window.open(url, '_blank');
-}
+function toggleSmmIdea(id) { const i = smmIdeas.find(x=>x.id===id); if(i){i.used=!i.used;localStorage.setItem('ws_smm_ideas',JSON.stringify(smmIdeas));renderSmmIdeas();} }
+function deleteSmmIdea(id) { smmIdeas=smmIdeas.filter(x=>x.id!==id);localStorage.setItem('ws_smm_ideas',JSON.stringify(smmIdeas));renderSmmIdeas(); }
 
-async function analyzeIdea(id) {
-  const idea = ideas.find(i => i.id === id);
-  if (!idea) return;
-  const key = localStorage.getItem('smm_api_key');
-  if (!key) { alert('Добавь API ключ в Настройки'); return; }
-
-  const prompt = `Я нашла референс для контента: "${idea.title}"${idea.url ? `, ссылка: ${idea.url}` : ''}. Тип: ${typeLabels[idea.type]}, платформа: ${idea.platform}. Помоги мне: 1) Что именно стоит взять из этого референса (идея, структура, подача)? 2) Как адаптировать под мою аудиторию? 3) Дай конкретный план как повторить этот формат.`;
-
-  // Switch to chat and send
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('tab-chat').classList.add('active');
-  document.querySelectorAll('.tab')[1].classList.add('active');
-
-  addMsg('user', `Разбери мой референс: "${idea.title}"`);
-  const typing = addTyping();
-  try {
-    const res = await callClaude(prompt, key, 'Ты профессиональный SMM-стратег. Анализируешь референсы и помогаешь адаптировать контент. Отвечай на русском, структурированно.');
-    typing.remove();
-    addMsg('ai', res);
-  } catch(e) {
-    typing.remove();
-    addMsg('ai', '⚠️ ' + e.message);
-  }
-}
-
-// ===== TASKS =====
-let tasks = [];
-let taskFilter = 'all';
-
-async function addTask() {
-  const title = document.getElementById('task-title').value.trim();
-  if (!title) { alert('Введи название задачи'); return; }
-  const task = {
-    title,
-    priority: document.getElementById('task-priority').value,
-    category: document.getElementById('task-category').value,
-    date: document.getElementById('task-date').value || null,
-    remind: document.getElementById('task-remind').value.trim() || null,
-    done: false
-  };
-  await sbInsert('tasks', task);
-  document.getElementById('task-title').value = '';
-  document.getElementById('task-date').value = '';
-  document.getElementById('task-remind').value = '';
-  await loadTasks();
-}
-
-async function loadTasks() {
-  tasks = await sbGet('tasks');
-  renderTasks();
-}
-
-async function toggleTask(id) {
-  const t = tasks.find(t => t.id === id);
-  if (t) { await sbUpdate('tasks', id, { done: !t.done }); await loadTasks(); }
-}
-
-async function deleteTask(id) {
-  await sbDelete('tasks', id);
-  tasks = tasks.filter(t => t.id !== id);
-  renderTasks();
-}
-
-function filterTasks(el, filter) {
-  taskFilter = filter;
-  document.querySelectorAll('#tab-tasks .pill').forEach(p => p.classList.remove('active'));
+// ===== PR =====
+function setPrTab(el, tab) {
+  document.querySelectorAll('#tab-pr .inner-tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  renderTasks();
+  document.getElementById('pr-texts').style.display = tab === 'texts' ? 'block' : 'none';
+  document.getElementById('pr-partners').style.display = tab === 'partners' ? 'block' : 'none';
+  document.getElementById('pr-ideas').style.display = tab === 'ideas' ? 'block' : 'none';
+  if (tab === 'partners') renderPartners();
+  if (tab === 'ideas') renderPrIdeas();
 }
 
-const catLabels = { post:'✍️ Пост', reels:'🎬 Reels', story:'📱 Stories', analytics:'📊 Аналитика', client:'👤 Клиент', other:'📌 Другое' };
-const priorityLabels = { high:'🔴 Срочно', medium:'🟡 Средний', low:'🟢 Низкий' };
+function setPrType(el, type) {
+  prType = type;
+  document.querySelectorAll('#pr-type-tabs .inner-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
 
-function renderTasks() {
-  const list = document.getElementById('task-list');
-  let filtered = tasks;
-  if (taskFilter === 'active') filtered = tasks.filter(t => !t.done);
-  else if (taskFilter === 'done') filtered = tasks.filter(t => t.done);
-  else if (taskFilter === 'high') filtered = tasks.filter(t => t.priority === 'high' && !t.done);
+const prPrompts = {
+  release: (t,d) => `Напиши профессиональный пресс-релиз для продюсерского центра Wonderstage о: "${t}". Детали: ${d}. Структура: заголовок, лид, основной текст, цитата, контакты.`,
+  announce: (t,d) => `Напиши яркий анонс мероприятия Wonderstage: "${t}". Детали: ${d}. Для СМИ и соцсетей, с призывом к действию.`,
+  partner: (t,d) => `Напиши деловое письмо о партнёрстве от Wonderstage по теме: "${t}". Детали: ${d}. Профессионально, с конкретным предложением.`,
+  comment: (t,d) => `Напиши экспертный комментарий для СМИ от Wonderstage на тему: "${t}". Детали: ${d}. Коротко, авторитетно, с позицией.`
+};
 
-  const total = tasks.length;
-  const done = tasks.filter(t => t.done).length;
-  const overdue = tasks.filter(t => !t.done && t.date && new Date(t.date) < new Date()).length;
-
-  const statsHtml = `
-    <div class="tasks-stats">
-      <div class="stat-mini"><div class="stat-mini-num">${total}</div><div class="stat-mini-label">Всего</div></div>
-      <div class="stat-mini"><div class="stat-mini-num" style="color:var(--success)">${done}</div><div class="stat-mini-label">Готово</div></div>
-      <div class="stat-mini"><div class="stat-mini-num" style="color:#f87171">${overdue}</div><div class="stat-mini-label">Просрочено</div></div>
-    </div>
-  `;
-
-  if (!filtered.length) {
-    list.innerHTML = statsHtml + '<div class="tasks-empty">Задач нет 🎉</div>';
-    return;
-  }
-
-  list.innerHTML = statsHtml + filtered.map(t => {
-    const today = new Date(); today.setHours(0,0,0,0);
-    const taskDate = t.date ? new Date(t.date) : null;
-    const isOverdue = taskDate && taskDate < today && !t.done;
-    const dateStr = taskDate ? taskDate.toLocaleDateString('ru', {day:'numeric',month:'short'}) : '';
-    return `
-      <div class="task-item${t.done ? ' done' : ''}">
-        <div class="task-check" onclick="toggleTask(${t.id})">${t.done ? '✓' : ''}</div>
-        <div class="task-body">
-          <div class="task-title-text">${escHtml(t.title)}</div>
-          <div class="task-meta">
-            <span class="task-badge ${t.priority}">${priorityLabels[t.priority]}</span>
-            <span class="task-badge">${catLabels[t.category]}</span>
-            ${dateStr ? `<span class="task-badge${isOverdue?' overdue':''}">${isOverdue?'⚠️ ':''} ${dateStr}</span>` : ''}
-            ${t.remind ? `<span class="task-remind-badge">🔔 ${escHtml(t.remind)}</span>` : ''}
-          </div>
+async function generatePrText() {
+  const topic = document.getElementById('pr-topic').value.trim();
+  const details = document.getElementById('pr-details').value.trim();
+  if (!topic) { alert('Введи тему'); return; }
+  const key = localStorage.getItem('ws_api_key');
+  if (!key) { alert('Добавь API ключ'); return; }
+  document.getElementById('pr-btn-text').innerHTML = '<div class="spinner"></div>';
+  document.querySelector('#pr-texts .btn-primary').disabled = true;
+  try {
+    const res = await callClaude(prPrompts[prType](topic, details||'не указаны'), key, 'Ты PR-директор продюсерского центра Wonderstage. Пишешь профессиональные PR-тексты. Отвечай на русском.');
+    document.getElementById('pr-result').innerHTML = `
+      <div class="result-box">
+        <div class="result-head"><span><span class="result-dot"></span>Готово</span></div>
+        <div class="result-text">${escHtml(res)}</div>
+        <div class="result-actions">
+          <button class="result-btn" onclick="copyText(this,'${escAttr(res)}')">📋 Копировать</button>
         </div>
-        <button class="task-delete" onclick="deleteTask(${t.id})">×</button>
+      </div>`;
+  } catch(e) {
+    document.getElementById('pr-result').innerHTML = `<div style="color:var(--danger);font-size:12px;">${e.message}</div>`;
+  }
+  document.getElementById('pr-btn-text').textContent = '✦ Сгенерировать текст';
+  document.querySelector('#pr-texts .btn-primary').disabled = false;
+}
+
+function addPartner() {
+  const name = document.getElementById('pp-name').value.trim();
+  if (!name) { alert('Введи название'); return; }
+  partners.unshift({ id: Date.now(), name, type: document.getElementById('pp-type').value, contact: document.getElementById('pp-contact').value.trim(), notes: document.getElementById('pp-notes').value.trim() });
+  localStorage.setItem('ws_partners', JSON.stringify(partners));
+  ['pp-name','pp-contact','pp-notes'].forEach(id => document.getElementById(id).value = '');
+  renderPartners();
+}
+
+const partnerTypeLabels = { media:'📰 СМИ', sponsor:'💼 Спонсор', info:'📢 Инфопартнёр', venue:'🏛 Площадка', other:'🤝 Другое' };
+
+function renderPartners() {
+  const list = document.getElementById('partners-list');
+  if (!partners.length) { list.innerHTML = '<div class="empty">Партнёров пока нет</div>'; return; }
+  list.innerHTML = partners.map(p => `
+    <div class="partner-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div class="partner-name">${escHtml(p.name)}</div>
+          <div class="partner-type">${partnerTypeLabels[p.type]||p.type}</div>
+          ${p.contact ? `<div class="partner-contact">${escHtml(p.contact)}</div>` : ''}
+          ${p.notes ? `<div style="font-size:11px;color:var(--muted);margin-top:4px;">${escHtml(p.notes)}</div>` : ''}
+        </div>
+        <button class="task-del" onclick="deletePartner(${p.id})">×</button>
       </div>
-    `;
+    </div>`).join('');
+}
+
+function deletePartner(id) { partners=partners.filter(p=>p.id!==id);localStorage.setItem('ws_partners',JSON.stringify(partners));renderPartners(); }
+
+function addPrIdea() {
+  const title = document.getElementById('pri-title').value.trim();
+  if (!title) { alert('Введи идею'); return; }
+  const tags = document.getElementById('pri-tags').value.trim();
+  prIdeas.unshift({ id: Date.now(), title, url: document.getElementById('pri-url').value.trim(), tags: tags ? tags.split(',').map(t=>t.trim()) : [] });
+  localStorage.setItem('ws_pr_ideas', JSON.stringify(prIdeas));
+  ['pri-title','pri-url','pri-tags'].forEach(id => document.getElementById(id).value = '');
+  renderPrIdeas();
+}
+
+function renderPrIdeas() {
+  const list = document.getElementById('pr-ideas-list');
+  if (!prIdeas.length) { list.innerHTML = '<div class="empty">PR-идей пока нет</div>'; return; }
+  list.innerHTML = prIdeas.map(i => `
+    <div class="card" style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;">
+        <div style="flex:1;">
+          <div class="card-title">${escHtml(i.title)}</div>
+          ${i.url ? `<div style="font-size:11px;color:var(--accent);cursor:pointer;margin-top:3px;" onclick="openUrl('${escAttr(i.url)}')">${escHtml(i.url)}</div>` : ''}
+          ${i.tags.length ? `<div class="idea-tags" style="margin-top:6px;">${i.tags.map(t=>`<span class="idea-tag">#${escHtml(t)}</span>`).join('')}</div>` : ''}
+        </div>
+        <button class="task-del" onclick="deletePrIdea(${i.id})">×</button>
+      </div>
+    </div>`).join('');
+}
+
+function deletePrIdea(id) { prIdeas=prIdeas.filter(x=>x.id!==id);localStorage.setItem('ws_pr_ideas',JSON.stringify(prIdeas));renderPrIdeas(); }
+
+// ===== TEAM =====
+function setTeamTab(el, tab) {
+  document.querySelectorAll('#tab-team .inner-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('team-list-view').style.display = tab === 'list' ? 'block' : 'none';
+  document.getElementById('team-add-view').style.display = tab === 'add' ? 'block' : 'none';
+  if (tab === 'list') renderTeam();
+}
+
+function addTeamMember() {
+  const name = document.getElementById('tm-name').value.trim();
+  if (!name) { alert('Введи имя'); return; }
+  const member = {
+    id: Date.now(),
+    name,
+    role: document.getElementById('tm-role').value.trim(),
+    dept: document.getElementById('tm-dept').value,
+    bday: document.getElementById('tm-bday').value,
+    age: document.getElementById('tm-age').value,
+    drink: document.getElementById('tm-drink').value.trim(),
+    contact: document.getElementById('tm-contact').value.trim()
+  };
+  teamMembers.push(member);
+  localStorage.setItem('ws_team', JSON.stringify(teamMembers));
+  ['tm-name','tm-role','tm-bday','tm-age','tm-drink','tm-contact'].forEach(id => document.getElementById(id).value = '');
+  alert(`✅ ${name} добавлен в команду!`);
+  renderTeam();
+}
+
+function renderTeam() {
+  const list = document.getElementById('team-list');
+  if (!teamMembers.length) { list.innerHTML = '<div class="empty">Команда пока пуста — добавь участников!</div>'; return; }
+  const today = new Date();
+  list.innerHTML = teamMembers.map(m => {
+    let bdayStr = '', bdaySoon = false;
+    if (m.bday) {
+      const bd = new Date(m.bday);
+      const next = new Date(today.getFullYear(), bd.getMonth(), bd.getDate());
+      if (next < today) next.setFullYear(today.getFullYear() + 1);
+      const diff = Math.ceil((next - today) / 86400000);
+      bdaySoon = diff <= 7;
+      bdayStr = bd.toLocaleDateString('ru', { day:'numeric', month:'long' }) + (bdaySoon ? ` 🎂 через ${diff} дн.` : '');
+    }
+    const initials = m.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    return `<div class="team-card">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div class="team-avatar">${initials}</div>
+        <div class="team-info" style="flex:1;">
+          <div class="team-name">${escHtml(m.name)}</div>
+          <div class="team-role">${escHtml(m.role||'')} ${m.dept ? `· ${deptLabels[m.dept]||''}` : ''}</div>
+          <div class="team-tags">
+            ${m.drink ? `<span class="team-tag">☕ ${escHtml(m.drink)}</span>` : ''}
+            ${m.age ? `<span class="team-tag">${m.age} лет</span>` : ''}
+            ${m.contact ? `<span class="team-tag" style="color:var(--accent);">${escHtml(m.contact)}</span>` : ''}
+          </div>
+          ${bdayStr ? `<div class="team-bday${bdaySoon?' ':''}">🎂 ${bdayStr}</div>` : ''}
+        </div>
+        <button class="task-del" onclick="deleteTeamMember(${m.id})">×</button>
+      </div>
+    </div>`;
   }).join('');
 }
 
-function scheduleReminder(task) {}
-
-function filterIdeas(el, filter) {
-  ideaFilter = filter;
-  document.querySelectorAll('#tab-ideas .pill').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
-  renderIdeas();
+function deleteTeamMember(id) {
+  teamMembers = teamMembers.filter(m => m.id !== id);
+  localStorage.setItem('ws_team', JSON.stringify(teamMembers));
+  renderTeam();
 }
 
-// Render tasks when switching to tab
-const origSwitch = window.switchTab;
-// override switchTab to render tasks
+function checkBirthdays() {
+  const today = new Date();
+  teamMembers.forEach(m => {
+    if (!m.bday) return;
+    const bd = new Date(m.bday);
+    const next = new Date(today.getFullYear(), bd.getMonth(), bd.getDate());
+    if (next < today) next.setFullYear(today.getFullYear() + 1);
+    const diff = Math.ceil((next - today) / 86400000);
+    if (diff === 7 || diff === 1) {
+      console.log(`🎂 День рождения: ${m.name} через ${diff} дн.`);
+    }
+  });
+}
 
-function togglePlatform(el) {
-  el.classList.toggle('active');
+// ===== NAVIGATION =====
+function switchTab(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+  if (name === 'tasks') { loadTasks().then(renderTasks); }
+  if (name === 'dashboard') { loadTasks().then(() => { renderDashboard(); }); }
+  if (name === 'calendar') loadAndRenderCalendar();
+  if (name === 'team') renderTeam();
+  if (name === 'smm') renderSmmIdeas();
 }
-function selectTone(el, tone) {
-  selectedTone = tone;
-  document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
+
+// ===== CLAUDE API =====
+async function callClaude(prompt, key, system = 'Ты профессиональный ассистент продюсерского центра Wonderstage. Отвечай на русском.') {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json', 'x-api-key':key, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
+    body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1500, system, messages:[{ role:'user', content:prompt }] })
+  });
+  if (!r.ok) { const e = await r.json().catch(()=>({})); throw new Error(e.error?.message || `Ошибка API: ${r.status}`); }
+  const d = await r.json();
+  return d.content[0].text;
 }
-function saveKey() {
-  const val = document.getElementById('api-key-input').value.trim();
-  localStorage.setItem('smm_api_key', val);
-  apiKey = val;
-  const niche = document.getElementById('niche-setting').value.trim();
-  if (niche) localStorage.setItem('smm_niche', niche);
-  alert('Сохранено ✓');
-}
-function copyText(btn, text) {
-  navigator.clipboard.writeText(text).then(() => { btn.textContent = '✅ Скопировано'; setTimeout(() => btn.textContent = '📋 Копировать', 2000); });
-}
-function shareToTg(text) {
-  if (window.Telegram?.WebApp) window.Telegram.WebApp.close();
-}
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-}
-function chatKeydown(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
-}
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function escAttr(s) {
-  return s.replace(/'/g, '&#39;').replace(/\n/g, '\\n');
-}
+
+// ===== SETTINGS (hidden, via URL param) =====
+const urlKey = new URLSearchParams(window.location.search).get('key');
+if (urlKey) { localStorage.setItem('ws_api_key', urlKey); }
+
+// ===== HELPERS =====
+function escHtml(s='') { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escAttr(s='') { return String(s).replace(/'/g,'&#39;').replace(/\n/g,'\\n'); }
+function copyText(btn, text) { navigator.clipboard.writeText(text).then(() => { btn.textContent='✅ Скопировано'; setTimeout(()=>btn.textContent='📋 Копировать',2000); }); }
+function openUrl(url) { if (window.Telegram?.WebApp) window.Telegram.WebApp.openLink(url); else window.open(url,'_blank'); }
+function togglePill(el) { el.classList.toggle('active'); }
+function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,100)+'px'; }
 </script>
 </body>
 </html>
