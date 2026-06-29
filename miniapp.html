@@ -231,6 +231,7 @@ textarea { resize:none; min-height:80px; }
   <button class="nav-btn" onclick="switchTab('smm')">📱 SMM</button>
   <button class="nav-btn" onclick="switchTab('pr')">📣 PR</button>
   <button class="nav-btn" onclick="switchTab('team')">👥 Команда</button>
+  <button class="nav-btn" onclick="switchTab('settings')">⚙️ Настройки</button>
 </div>
 
 <!-- DASHBOARD -->
@@ -506,7 +507,57 @@ textarea { resize:none; min-height:80px; }
   </div>
 </div>
 
+
+<!-- SETTINGS -->
+<div class="panel" id="tab-settings">
+  <div style="height:8px;"></div>
+  <div class="card">
+    <div class="section-title" style="margin-top:0;">Anthropic API Key</div>
+    <input type="text" id="set-key" placeholder="sk-ant-api03-..." value="">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Ключ хранится только на этом устройстве</div>
+    <button class="btn-primary" onclick="saveSettings()">💾 Сохранить</button>
+  </div>
+  <div class="card" style="margin-top:10px;">
+    <div class="section-title" style="margin-top:0;">Ваша роль</div>
+    <input type="text" id="set-niche" placeholder="Например: Продюсер, SMM-менеджер...">
+    <div class="section-title">Название центра</div>
+    <input type="text" id="set-name" placeholder="Wonderstage" value="Wonderstage">
+    <button class="btn-primary" onclick="saveSettings()">💾 Сохранить</button>
+  </div>
+  <div class="card" style="margin-top:10px;">
+    <div class="section-title" style="margin-top:0;">📌 Как получить API ключ</div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.8;">
+      1. Зайди на <span style="color:var(--accent);">console.anthropic.com</span><br>
+      2. API Keys → Create Key<br>
+      3. Скопируй ключ и вставь выше<br>
+      4. Нажми Сохранить
+    </div>
+  </div>
+  <div style="height:16px;"></div>
+</div>
+
 <script>
+
+// ===== SETTINGS =====
+function saveSettings() {
+  const key = document.getElementById('set-key').value.trim();
+  const niche = document.getElementById('set-niche').value.trim();
+  const name = document.getElementById('set-name').value.trim();
+  if (key) localStorage.setItem('ws_api_key', key);
+  if (niche) localStorage.setItem('ws_niche', niche);
+  if (name) localStorage.setItem('ws_name', name);
+  alert('✅ Сохранено!');
+}
+
+function loadSettings() {
+  const key = localStorage.getItem('ws_api_key');
+  const niche = localStorage.getItem('ws_niche');
+  const name = localStorage.getItem('ws_name');
+  if (key) { const el = document.getElementById('set-key'); if(el) el.value = key; }
+  if (niche) { const el = document.getElementById('set-niche'); if(el) el.value = niche; }
+  if (name) { const el = document.getElementById('set-name'); if(el) el.value = name; }
+}
+
 // ===== STATE =====
 const SB_URL = 'https://riwjxtjwcnlledvfcqpb.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpd2p4dGp3Y25sbGVkdmZjcXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1ODM1MjksImV4cCI6MjA5NjE1OTUyOX0.jY6lwTVGld6aeHay1eC30O4SLWumZDM_10FhQ1MHn7I';
@@ -539,6 +590,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   } else {
     document.getElementById('user-badge').textContent = 'Preview';
   }
+  loadSettings();
   await loadTasks();
   renderDashboard();
   checkBirthdays();
@@ -603,7 +655,8 @@ async function addTask() {
     document.getElementById('t-title').value = '';
     document.getElementById('t-date').value = '';
     document.getElementById('t-assign').value = '';
-    await loadTasks();
+    loadSettings();
+  await loadTasks();
     renderTasks();
     renderDashboard();
   }
@@ -613,6 +666,7 @@ async function toggleTask(id) {
   const t = tasks.find(x => x.id === id);
   if (!t) return;
   await sbUpdate('tasks', id, { done: !t.done });
+  loadSettings();
   await loadTasks();
   renderTasks();
   renderDashboard();
@@ -715,6 +769,7 @@ function changeMonth(dir) {
 }
 
 async function loadAndRenderCalendar() {
+  loadSettings();
   await loadTasks();
   renderCalendar();
 }
@@ -1167,6 +1222,7 @@ function switchTab(name) {
   if (name === 'dashboard') { loadTasks().then(() => { renderDashboard(); }); }
   if (name === 'calendar') loadAndRenderCalendar();
   if (name === 'team') renderTeam();
+  if (name === 'settings') loadSettings();
   if (name === 'smm') renderSmmIdeas();
 }
 
