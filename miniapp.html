@@ -23,8 +23,8 @@
   --r: 14px;
   --prod: #7c6ff7;
   --mkt: #c084fc;
-  --art: #34d399;
-  --typo: #f59e0b;
+  --sales: #34d399;
+  --admin: #f59e0b;
   --smm: #38bdf8;
   --pr: #f472b6;
 }
@@ -72,8 +72,9 @@ body { font-family:'Onest',sans-serif; background:var(--bg); color:var(--text); 
 .dept-pill[data-dept="all"].active { background:var(--accent); }
 .dept-pill[data-dept="prod"].active { background:var(--prod); }
 .dept-pill[data-dept="mkt"].active { background:var(--mkt); }
-.dept-pill[data-dept="art"].active { background:var(--art); color:#000; }
-.dept-pill[data-dept="typo"].active { background:var(--typo); color:#000; }
+.dept-pill[data-dept="sales"].active { background:var(--sales); color:#000; }
+.dept-pill[data-dept="admin"].active { background:var(--admin); color:#000; }
+.dept-pill[data-dept="smm"].active { background:var(--smm); color:#000; }
 
 /* TASK ITEMS */
 .task-item { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); padding:12px 14px; margin-bottom:8px; display:flex; gap:10px; align-items:flex-start; transition:opacity 0.2s; }
@@ -91,8 +92,9 @@ body { font-family:'Onest',sans-serif; background:var(--bg); color:var(--text); 
 .tbadge.overdue { background:rgba(248,113,113,0.2); color:var(--danger); font-weight:500; }
 .tbadge.prod { background:rgba(124,111,247,0.15); color:var(--prod); }
 .tbadge.mkt { background:rgba(192,132,252,0.15); color:var(--mkt); }
-.tbadge.art { background:rgba(52,211,153,0.12); color:var(--art); }
-.tbadge.typo { background:rgba(245,158,11,0.12); color:var(--typo); }
+.tbadge.sales { background:rgba(52,211,153,0.12); color:var(--sales); }
+.tbadge.admin { background:rgba(245,158,11,0.12); color:var(--admin); }
+.tbadge.smm { background:rgba(56,189,248,0.12); color:var(--smm); }
 .task-del { background:none; border:none; color:var(--muted); cursor:pointer; font-size:16px; flex-shrink:0; }
 
 /* FORMS */
@@ -192,17 +194,51 @@ textarea { resize:none; min-height:80px; }
 .dept-card { border-radius:var(--r); padding:12px 14px; border:1px solid transparent; }
 .dept-card.prod { background:rgba(124,111,247,0.1); border-color:rgba(124,111,247,0.2); }
 .dept-card.mkt { background:rgba(192,132,252,0.1); border-color:rgba(192,132,252,0.2); }
-.dept-card.art { background:rgba(52,211,153,0.08); border-color:rgba(52,211,153,0.2); }
-.dept-card.typo { background:rgba(245,158,11,0.08); border-color:rgba(245,158,11,0.2); }
+.dept-card.sales { background:rgba(52,211,153,0.08); border-color:rgba(52,211,153,0.2); }
+.dept-card.admin { background:rgba(245,158,11,0.08); border-color:rgba(245,158,11,0.2); }
 .dept-card-name { font-size:11px; font-weight:500; margin-bottom:4px; }
 .dept-card.prod .dept-card-name { color:var(--prod); }
 .dept-card.mkt .dept-card-name { color:var(--mkt); }
-.dept-card.art .dept-card-name { color:var(--art); }
-.dept-card.typo .dept-card-name { color:var(--typo); }
+.dept-card.sales .dept-card-name { color:var(--sales); }
+.dept-card.admin .dept-card-name { color:var(--admin); }
 .dept-card-count { font-size:22px; font-weight:600; color:var(--text); }
 .dept-card-sub { font-size:10px; color:var(--muted); margin-top:2px; }
 
 .empty { text-align:center; padding:32px 16px; color:var(--muted); font-size:13px; }
+
+/* PROJECTS */
+.project-card { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); padding:14px; margin-bottom:10px; cursor:pointer; transition:border-color 0.15s; }
+.project-card:hover { border-color:rgba(124,111,247,0.4); }
+.project-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.project-name { font-size:15px; font-weight:600; }
+.project-date { font-size:11px; color:var(--muted); margin-top:2px; }
+.pstatus { font-size:10px; padding:3px 9px; border-radius:10px; font-weight:500; flex-shrink:0; }
+.pstatus.planning { background:rgba(251,191,36,0.15); color:var(--warn); }
+.pstatus.active { background:rgba(248,113,113,0.15); color:var(--danger); }
+.pstatus.done { background:rgba(52,211,153,0.15); color:var(--success); }
+.project-desc { font-size:12px; color:var(--muted); margin-bottom:8px; line-height:1.5; }
+.project-progress-bar { height:5px; background:var(--s2); border-radius:3px; overflow:hidden; margin-bottom:6px; }
+.project-progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width 0.3s; }
+.project-stats { font-size:11px; color:var(--muted); }
+
+/* CONCERT */
+.artist-card { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); padding:13px; margin-bottom:8px; }
+.artist-name { font-size:14px; font-weight:500; margin-bottom:3px; }
+.artist-meta { font-size:11px; color:var(--muted); margin-bottom:6px; }
+.artist-status { font-size:10px; padding:2px 9px; border-radius:9px; display:inline-block; }
+.artist-status.discussing { background:rgba(251,191,36,0.15); color:var(--warn); }
+.artist-status.confirmed { background:rgba(52,211,153,0.15); color:var(--success); }
+.artist-status.contract { background:rgba(124,111,247,0.15); color:var(--accent); }
+.rider-item { background:var(--s1); border:1px solid var(--border); border-radius:10px; padding:10px 13px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; }
+.rider-cat { font-size:10px; padding:2px 8px; border-radius:8px; background:var(--s2); color:var(--muted); margin-right:8px; }
+
+/* PROJECT FILES */
+.file-item { background:var(--s1); border:1px solid var(--border); border-radius:10px; padding:11px 13px; margin-bottom:7px; display:flex; align-items:center; gap:10px; cursor:pointer; transition:border-color 0.15s; }
+.file-item:hover { border-color:rgba(124,111,247,0.4); }
+.file-icon { font-size:18px; flex-shrink:0; }
+.file-info { flex:1; min-width:0; }
+.file-title { font-size:13px; font-weight:500; margin-bottom:2px; }
+.file-url { font-size:11px; color:var(--accent); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
 /* TABS inside panels */
 .inner-tabs { display:flex; gap:5px; margin-bottom:14px; flex-wrap:wrap; }
@@ -225,11 +261,12 @@ textarea { resize:none; min-height:80px; }
 
 <div class="nav">
   <button class="nav-btn active" onclick="switchTab('dashboard')">🏠 Главная</button>
+  <button class="nav-btn" onclick="switchTab('projects')">📁 Проекты</button>
   <button class="nav-btn" onclick="switchTab('tasks')">✅ Задачи</button>
   <button class="nav-btn" onclick="switchTab('calendar')">🗓 Календарь</button>
   <button class="nav-btn" onclick="switchTab('ai')">🤖 AI</button>
-  <button class="nav-btn" onclick="switchTab('smm')">📱 SMM</button>
-  <button class="nav-btn" onclick="switchTab('pr')">📣 PR</button>
+  <button class="nav-btn" onclick="switchTab('smm')">📱 SMM/PR</button>
+  <button class="nav-btn" onclick="switchTab('concert')">📀 Концерт</button>
   <button class="nav-btn" onclick="switchTab('team')">👥 Команда</button>
   <button class="nav-btn" onclick="switchTab('settings')">⚙️ Настройки</button>
 </div>
@@ -247,8 +284,8 @@ textarea { resize:none; min-height:80px; }
   <div class="dept-summary">
     <div class="dept-card prod"><div class="dept-card-name">Продакшн</div><div class="dept-card-count" id="dd-prod">—</div><div class="dept-card-sub">активных задач</div></div>
     <div class="dept-card mkt"><div class="dept-card-name">Маркетинг</div><div class="dept-card-count" id="dd-mkt">—</div><div class="dept-card-sub">активных задач</div></div>
-    <div class="dept-card art"><div class="dept-card-name">Артисты</div><div class="dept-card-count" id="dd-art">—</div><div class="dept-card-sub">активных задач</div></div>
-    <div class="dept-card typo"><div class="dept-card-name">Типография</div><div class="dept-card-count" id="dd-typo">—</div><div class="dept-card-sub">активных задач</div></div>
+    <div class="dept-card sales"><div class="dept-card-name">Продажи</div><div class="dept-card-count" id="dd-sales">—</div><div class="dept-card-sub">активных задач</div></div>
+    <div class="dept-card admin"><div class="dept-card-name">Административные</div><div class="dept-card-count" id="dd-admin">—</div><div class="dept-card-sub">активных задач</div></div>
   </div>
   <div class="section-title">🔴 Горящие задачи</div>
   <div id="dash-urgent"></div>
@@ -262,12 +299,16 @@ textarea { resize:none; min-height:80px; }
   <div class="card" style="margin-bottom:14px;">
     <div class="section-title" style="margin-top:0;">Новая задача</div>
     <input type="text" id="t-title" placeholder="Название задачи...">
+    <select id="t-project">
+      <option value="">Без проекта (общая задача)</option>
+    </select>
     <div class="form-row">
       <select id="t-dept">
         <option value="prod">🎬 Продакшн</option>
         <option value="mkt">📢 Маркетинг</option>
-        <option value="art">🎤 Артисты</option>
-        <option value="typo">🖨 Типография</option>
+        <option value="sales">💼 Продажи</option>
+        <option value="admin">📋 Административные</option>
+        <option value="smm">📱 SMM/PR</option>
       </select>
       <select id="t-priority">
         <option value="high">🔴 Срочно</option>
@@ -287,11 +328,70 @@ textarea { resize:none; min-height:80px; }
     <span class="dept-pill active" data-dept="all" onclick="filterTasks(this)">Все</span>
     <span class="dept-pill" data-dept="prod" onclick="filterTasks(this)">Продакшн</span>
     <span class="dept-pill" data-dept="mkt" onclick="filterTasks(this)">Маркетинг</span>
-    <span class="dept-pill" data-dept="art" onclick="filterTasks(this)">Артисты</span>
-    <span class="dept-pill" data-dept="typo" onclick="filterTasks(this)">Типография</span>
+    <span class="dept-pill" data-dept="sales" onclick="filterTasks(this)">Продажи</span>
+    <span class="dept-pill" data-dept="admin" onclick="filterTasks(this)">Административные</span>
+    <span class="dept-pill" data-dept="smm" onclick="filterTasks(this)">SMM/PR</span>
   </div>
 
   <div id="task-list"></div>
+</div>
+
+<!-- PROJECTS -->
+<div class="panel" id="tab-projects">
+  <div class="card" style="margin-bottom:14px;">
+    <div class="section-title" style="margin-top:0;">Новый проект</div>
+    <input type="text" id="p-name" placeholder="Название (например: Король Лев)">
+    <div class="form-row">
+      <input type="date" id="p-date">
+      <select id="p-status">
+        <option value="planning">📝 Планирование</option>
+        <option value="active">🔥 В работе</option>
+        <option value="done">✅ Завершён</option>
+      </select>
+    </div>
+    <textarea id="p-desc" placeholder="Описание проекта (опционально)" rows="2"></textarea>
+    <button class="btn-primary" onclick="addProject()">+ Создать проект</button>
+  </div>
+  <div id="projects-list"></div>
+</div>
+
+<!-- PROJECT DETAIL -->
+<div class="panel" id="tab-project-detail">
+  <button class="btn-secondary" onclick="switchTabDirect('projects')" style="margin-bottom:12px;">← Все проекты</button>
+  <div class="card" id="pd-header" style="margin-bottom:14px;"></div>
+
+  <div class="section-title" style="margin-top:0;">📎 Файлы и ссылки</div>
+  <div class="card" style="margin-bottom:14px;">
+    <input type="text" id="pd-file-title" placeholder="Название (например: Смета, Райдер, Договор)...">
+    <input type="text" id="pd-file-url" placeholder="Ссылка (Google Drive, Docs, Sheets...)">
+    <button class="btn-primary" onclick="addProjectFile()">+ Добавить ссылку</button>
+  </div>
+  <div id="pd-files-list" style="margin-bottom:14px;"></div>
+
+  <div class="section-title">Задачи проекта</div>
+  <div class="card" style="margin-bottom:14px;">
+    <input type="text" id="pd-task-title" placeholder="Название задачи...">
+    <div class="form-row">
+      <select id="pd-task-dept">
+        <option value="prod">🎬 Продакшн</option>
+        <option value="mkt">📢 Маркетинг</option>
+        <option value="sales">💼 Продажи</option>
+        <option value="admin">📋 Административные</option>
+        <option value="smm">📱 SMM/PR</option>
+      </select>
+      <select id="pd-task-priority">
+        <option value="high">🔴 Срочно</option>
+        <option value="medium" selected>🟡 Средний</option>
+        <option value="low">🟢 Низкий</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <input type="date" id="pd-task-date">
+      <input type="text" id="pd-task-assign" placeholder="Исполнитель...">
+    </div>
+    <button class="btn-primary" onclick="addProjectTask()">+ Добавить задачу в проект</button>
+  </div>
+  <div id="pd-task-list"></div>
 </div>
 
 <!-- CALENDAR -->
@@ -335,6 +435,7 @@ textarea { resize:none; min-height:80px; }
     <span class="inner-tab active" onclick="setSmmTab(this,'tools')">🛠 Инструменты</span>
     <span class="inner-tab" onclick="setSmmTab(this,'plan')">📅 Контент-план</span>
     <span class="inner-tab" onclick="setSmmTab(this,'ideas')">💡 Идеи</span>
+    <span class="inner-tab" onclick="goToPr()">📣 PR</span>
   </div>
 
   <!-- SMM TOOLS -->
@@ -416,6 +517,7 @@ textarea { resize:none; min-height:80px; }
 
 <!-- PR -->
 <div class="panel" id="tab-pr">
+  <button class="btn-secondary" onclick="switchTabDirect('smm')" style="margin-bottom:12px;">← Назад к SMM/PR</button>
   <div class="inner-tabs">
     <span class="inner-tab active" onclick="setPrTab(this,'texts')">✍️ Тексты</span>
     <span class="inner-tab" onclick="setPrTab(this,'partners')">🤝 Партнёры</span>
@@ -468,6 +570,67 @@ textarea { resize:none; min-height:80px; }
   </div>
 </div>
 
+<!-- CONCERT -->
+<div class="panel" id="tab-concert">
+  <div class="inner-tabs">
+    <span class="inner-tab active" onclick="setConcertTab(this,'artists')">🎤 Артисты</span>
+    <span class="inner-tab" onclick="setConcertTab(this,'venue')">🏛 Площадка</span>
+    <span class="inner-tab" onclick="setConcertTab(this,'rider')">🎚 Райдер</span>
+  </div>
+
+  <!-- ARTISTS -->
+  <div id="concert-artists">
+    <div class="card" style="margin-bottom:12px;">
+      <input type="text" id="ca-name" placeholder="Имя артиста / коллектива">
+      <input type="text" id="ca-contact" placeholder="Контакт (Telegram, телефон...)">
+      <div class="form-row">
+        <select id="ca-status">
+          <option value="discussing">💬 Обсуждается</option>
+          <option value="confirmed">✅ Подтверждён</option>
+          <option value="contract">📝 Договор подписан</option>
+        </select>
+        <input type="text" id="ca-fee" placeholder="Гонорар">
+      </div>
+      <textarea id="ca-notes" placeholder="Требования / заметки..." rows="2"></textarea>
+      <button class="btn-primary" onclick="addArtist()">+ Добавить артиста</button>
+    </div>
+    <div id="artists-list"></div>
+  </div>
+
+  <!-- VENUE -->
+  <div id="concert-venue" style="display:none;">
+    <div class="card">
+      <input type="text" id="cv-name" placeholder="Название площадки">
+      <input type="text" id="cv-address" placeholder="Адрес">
+      <div class="form-row">
+        <input type="text" id="cv-capacity" placeholder="Вместимость">
+        <input type="text" id="cv-contact" placeholder="Контакт площадки">
+      </div>
+      <textarea id="cv-tech" placeholder="Техническая информация: сцена, доступ, парковка..." rows="3"></textarea>
+      <button class="btn-primary" onclick="saveVenue()">💾 Сохранить площадку</button>
+    </div>
+    <div id="venue-display"></div>
+  </div>
+
+  <!-- RIDER -->
+  <div id="concert-rider" style="display:none;">
+    <div class="card" style="margin-bottom:12px;">
+      <input type="text" id="cr-item" placeholder="Позиция (например: микрофон Shure SM58)">
+      <div class="form-row">
+        <select id="cr-category">
+          <option value="sound">🔊 Звук</option>
+          <option value="light">💡 Свет</option>
+          <option value="stage">🎭 Сцена</option>
+          <option value="other">📦 Другое</option>
+        </select>
+        <input type="text" id="cr-qty" placeholder="Количество">
+      </div>
+      <button class="btn-primary" onclick="addRiderItem()">+ Добавить в райдер</button>
+    </div>
+    <div id="rider-list"></div>
+  </div>
+</div>
+
 <!-- TEAM -->
 <div class="panel" id="tab-team">
   <div class="inner-tabs">
@@ -489,10 +652,9 @@ textarea { resize:none; min-height:80px; }
         <select id="tm-dept">
           <option value="prod">🎬 Продакшн</option>
           <option value="mkt">📢 Маркетинг</option>
-          <option value="art">🎤 Артисты</option>
-          <option value="typo">🖨 Типография</option>
-          <option value="pr">📣 PR</option>
-          <option value="smm">📱 SMM</option>
+          <option value="sales">💼 Продажи</option>
+          <option value="admin">📋 Административные</option>
+          <option value="smm">📱 SMM/PR</option>
           <option value="ops">⚙️ Операционка</option>
         </select>
       </div>
@@ -574,7 +736,7 @@ let aiMode = 'ops';
 let prType = 'release';
 let currentSmmTool = 'post';
 
-const deptLabels = { prod:'Продакшн', mkt:'Маркетинг', art:'Артисты', typo:'Типография', pr:'PR', smm:'SMM', ops:'Операционка' };
+const deptLabels = { prod:'Продакшн', mkt:'Маркетинг', sales:'Продажи', admin:'Административные', smm:'SMM/PR', ops:'Операционка' };
 const prioLabels = { high:'🔴 Срочно', medium:'🟡 Средний', low:'🟢 Низкий' };
 const prioEmoji = { high:'🔴', medium:'🟡', low:'🟢' };
 const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
@@ -593,6 +755,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadSettings();
   await loadTasks();
   renderDashboard();
+  updateProjectSelect();
   checkBirthdays();
   setAiHint();
 });
@@ -646,15 +809,18 @@ async function addTask() {
   const priority = document.getElementById('t-priority').value;
   const date = document.getElementById('t-date').value || null;
   const assign = document.getElementById('t-assign').value.trim();
+  const projectId = document.getElementById('t-project').value || null;
 
   const ok = await sbInsert('tasks', {
     title, priority, category: dept,
-    date, remind: assign || null, done: false
+    date, remind: assign || null, done: false,
+    project_id: projectId
   });
   if (ok) {
     document.getElementById('t-title').value = '';
     document.getElementById('t-date').value = '';
     document.getElementById('t-assign').value = '';
+    document.getElementById('t-project').value = '';
     loadSettings();
   await loadTasks();
     renderTasks();
@@ -713,6 +879,293 @@ function renderTasks() {
   }).join('');
 }
 
+// ===== PROJECTS =====
+let projects = JSON.parse(localStorage.getItem('ws_projects') || '[]');
+let currentProjectId = null;
+
+async function addProject() {
+  const name = document.getElementById('p-name').value.trim();
+  if (!name) { alert('Введи название проекта'); return; }
+  const project = {
+    id: Date.now(),
+    name,
+    date: document.getElementById('p-date').value || null,
+    status: document.getElementById('p-status').value,
+    desc: document.getElementById('p-desc').value.trim()
+  };
+  projects.unshift(project);
+  localStorage.setItem('ws_projects', JSON.stringify(projects));
+  ['p-name','p-date','p-desc'].forEach(id => document.getElementById(id).value = '');
+  renderProjects();
+  updateProjectSelect();
+}
+
+const statusLabels = { planning:'📝 Планирование', active:'🔥 В работе', done:'✅ Завершён' };
+
+function renderProjects() {
+  const list = document.getElementById('projects-list');
+  if (!projects.length) { list.innerHTML = '<div class="empty">Проектов пока нет — создай первый!</div>'; return; }
+  list.innerHTML = projects.map(p => {
+    const pTasks = tasks.filter(t => t.remind_project == p.id || (t.title && t._projectId === p.id));
+    const projTasks = tasks.filter(t => String(t.project_id) === String(p.id));
+    const done = projTasks.filter(t => t.done).length;
+    const total = projTasks.length;
+    const pct = total ? Math.round((done/total)*100) : 0;
+    const dateStr = p.date ? new Date(p.date).toLocaleDateString('ru', { day:'numeric', month:'long', year:'numeric' }) : 'дата не указана';
+    return `<div class="project-card" onclick="openProject(${p.id})">
+      <div class="project-head">
+        <div>
+          <div class="project-name">${escHtml(p.name)}</div>
+          <div class="project-date">📅 ${dateStr}</div>
+        </div>
+        <span class="pstatus ${p.status}">${statusLabels[p.status]}</span>
+      </div>
+      ${p.desc ? `<div class="project-desc">${escHtml(p.desc)}</div>` : ''}
+      ${total > 0 ? `
+        <div class="project-progress-bar"><div class="project-progress-fill" style="width:${pct}%"></div></div>
+        <div class="project-stats">${done} из ${total} задач выполнено (${pct}%)</div>
+      ` : '<div class="project-stats">Задач пока нет</div>'}
+    </div>`;
+  }).join('');
+}
+
+function updateProjectSelect() {
+  const opts = '<option value="">Без проекта (общая задача)</option>' +
+    projects.map(p => `<option value="${p.id}">${escHtml(p.name)}</option>`).join('');
+  const sel1 = document.getElementById('t-project');
+  if (sel1) sel1.innerHTML = opts;
+}
+
+function openProject(id) {
+  currentProjectId = id;
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+  const dateStr = p.date ? new Date(p.date).toLocaleDateString('ru', { day:'numeric', month:'long', year:'numeric' }) : 'дата не указана';
+  document.getElementById('pd-header').innerHTML = `
+    <div class="project-head">
+      <div>
+        <div class="project-name">${escHtml(p.name)}</div>
+        <div class="project-date">📅 ${dateStr}</div>
+      </div>
+      <span class="pstatus ${p.status}">${statusLabels[p.status]}</span>
+    </div>
+    ${p.desc ? `<div class="project-desc" style="margin-top:8px;">${escHtml(p.desc)}</div>` : ''}
+  `;
+  switchTabDirect('project-detail');
+  renderProjectTasks();
+  renderProjectFiles();
+}
+
+async function addProjectTask() {
+  const title = document.getElementById('pd-task-title').value.trim();
+  if (!title || !currentProjectId) { alert('Введи название задачи'); return; }
+  const dept = document.getElementById('pd-task-dept').value;
+  const priority = document.getElementById('pd-task-priority').value;
+  const date = document.getElementById('pd-task-date').value || null;
+  const assign = document.getElementById('pd-task-assign').value.trim();
+
+  const ok = await sbInsert('tasks', {
+    title, priority, category: dept, date,
+    remind: assign || null, done: false,
+    project_id: currentProjectId
+  });
+  if (ok) {
+    ['pd-task-title','pd-task-date','pd-task-assign'].forEach(id => document.getElementById(id).value = '');
+    await loadTasks();
+    renderProjectTasks();
+    renderProjects();
+  }
+}
+
+function renderProjectTasks() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const projTasks = tasks.filter(t => String(t.project_id) === String(currentProjectId));
+  const list = document.getElementById('pd-task-list');
+  if (!projTasks.length) { list.innerHTML = '<div class="empty">Задач в этом проекте пока нет</div>'; return; }
+  list.innerHTML = projTasks.map(t => {
+    const d = t.date ? new Date(t.date) : null;
+    if (d) d.setHours(0,0,0,0);
+    const overdue = d && d < today && !t.done;
+    const dateStr = d ? d.toLocaleDateString('ru', { day:'numeric', month:'short' }) : '';
+    return `<div class="task-item${t.done?' done':''}">
+      <div class="task-check" onclick="toggleTask(${t.id})">${t.done?'✓':''}</div>
+      <div class="task-body">
+        <div class="task-title">${escHtml(t.title)}</div>
+        <div class="task-meta">
+          <span class="tbadge ${t.priority}">${prioLabels[t.priority]||''}</span>
+          <span class="tbadge ${t.category}">${deptLabels[t.category]||t.category}</span>
+          ${dateStr ? `<span class="tbadge${overdue?' overdue':''}">${overdue?'⚠️ ':''}${dateStr}</span>` : ''}
+        </div>
+      </div>
+      <button class="task-del" onclick="deleteTask(${t.id})">×</button>
+    </div>`;
+  }).join('');
+}
+
+// ===== PROJECT FILES =====
+let projectFiles = JSON.parse(localStorage.getItem('ws_project_files') || '{}');
+
+function fileIconFor(url) {
+  const u = url.toLowerCase();
+  if (u.includes('docs.google.com/spreadsheets')) return '📊';
+  if (u.includes('docs.google.com/document')) return '📄';
+  if (u.includes('docs.google.com/presentation')) return '📽';
+  if (u.includes('drive.google.com')) return '📁';
+  if (u.includes('figma.com')) return '🎨';
+  return '🔗';
+}
+
+function addProjectFile() {
+  const title = document.getElementById('pd-file-title').value.trim();
+  const url = document.getElementById('pd-file-url').value.trim();
+  if (!title) { alert('Название обязательно — укажи что это за файл'); return; }
+  if (!url) { alert('Добавь ссылку на файл'); return; }
+  if (!currentProjectId) return;
+
+  if (!projectFiles[currentProjectId]) projectFiles[currentProjectId] = [];
+  projectFiles[currentProjectId].unshift({ id: Date.now(), title, url });
+  localStorage.setItem('ws_project_files', JSON.stringify(projectFiles));
+
+  document.getElementById('pd-file-title').value = '';
+  document.getElementById('pd-file-url').value = '';
+  renderProjectFiles();
+}
+
+function renderProjectFiles() {
+  const list = document.getElementById('pd-files-list');
+  const files = projectFiles[currentProjectId] || [];
+  if (!files.length) { list.innerHTML = '<div class="empty" style="padding:16px;">Файлов пока нет</div>'; return; }
+  list.innerHTML = files.map(f => `
+    <div class="file-item" onclick="openUrl('${escAttr(f.url)}')">
+      <div class="file-icon">${fileIconFor(f.url)}</div>
+      <div class="file-info">
+        <div class="file-title">${escHtml(f.title)}</div>
+        <div class="file-url">${escHtml(f.url)}</div>
+      </div>
+      <button class="task-del" onclick="event.stopPropagation(); deleteProjectFile(${f.id})">×</button>
+    </div>`).join('');
+}
+
+function deleteProjectFile(id) {
+  projectFiles[currentProjectId] = (projectFiles[currentProjectId] || []).filter(f => f.id !== id);
+  localStorage.setItem('ws_project_files', JSON.stringify(projectFiles));
+  renderProjectFiles();
+}
+
+// ===== CONCERT: ARTISTS =====
+let artists = JSON.parse(localStorage.getItem('ws_artists') || '[]');
+let venueData = JSON.parse(localStorage.getItem('ws_venue') || '{}');
+let riderItems = JSON.parse(localStorage.getItem('ws_rider') || '[]');
+
+function setConcertTab(el, tab) {
+  document.querySelectorAll('#tab-concert .inner-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('concert-artists').style.display = tab === 'artists' ? 'block' : 'none';
+  document.getElementById('concert-venue').style.display = tab === 'venue' ? 'block' : 'none';
+  document.getElementById('concert-rider').style.display = tab === 'rider' ? 'block' : 'none';
+  if (tab === 'artists') renderArtists();
+  if (tab === 'venue') renderVenue();
+  if (tab === 'rider') renderRider();
+}
+
+function addArtist() {
+  const name = document.getElementById('ca-name').value.trim();
+  if (!name) { alert('Введи имя артиста'); return; }
+  artists.unshift({
+    id: Date.now(), name,
+    contact: document.getElementById('ca-contact').value.trim(),
+    status: document.getElementById('ca-status').value,
+    fee: document.getElementById('ca-fee').value.trim(),
+    notes: document.getElementById('ca-notes').value.trim()
+  });
+  localStorage.setItem('ws_artists', JSON.stringify(artists));
+  ['ca-name','ca-contact','ca-fee','ca-notes'].forEach(id => document.getElementById(id).value = '');
+  renderArtists();
+}
+
+const artistStatusLabels = { discussing:'💬 Обсуждается', confirmed:'✅ Подтверждён', contract:'📝 Договор подписан' };
+
+function renderArtists() {
+  const list = document.getElementById('artists-list');
+  if (!artists.length) { list.innerHTML = '<div class="empty">Артистов пока нет</div>'; return; }
+  list.innerHTML = artists.map(a => `
+    <div class="artist-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="flex:1;">
+          <div class="artist-name">${escHtml(a.name)}</div>
+          <div class="artist-meta">${a.contact ? escHtml(a.contact) : ''}${a.fee ? ' · 💰 ' + escHtml(a.fee) : ''}</div>
+          <span class="artist-status ${a.status}">${artistStatusLabels[a.status]}</span>
+          ${a.notes ? `<div style="font-size:11px;color:var(--muted);margin-top:6px;">${escHtml(a.notes)}</div>` : ''}
+        </div>
+        <button class="task-del" onclick="deleteArtist(${a.id})">×</button>
+      </div>
+    </div>`).join('');
+}
+
+function deleteArtist(id) { artists=artists.filter(a=>a.id!==id);localStorage.setItem('ws_artists',JSON.stringify(artists));renderArtists(); }
+
+function saveVenue() {
+  venueData = {
+    name: document.getElementById('cv-name').value.trim(),
+    address: document.getElementById('cv-address').value.trim(),
+    capacity: document.getElementById('cv-capacity').value.trim(),
+    contact: document.getElementById('cv-contact').value.trim(),
+    tech: document.getElementById('cv-tech').value.trim()
+  };
+  localStorage.setItem('ws_venue', JSON.stringify(venueData));
+  alert('✅ Площадка сохранена!');
+  renderVenue();
+}
+
+function renderVenue() {
+  const el = document.getElementById('venue-display');
+  if (!venueData.name) { el.innerHTML = ''; return; }
+  ['cv-name','cv-address','cv-capacity','cv-contact','cv-tech'].forEach(id => {
+    const key = id.replace('cv-','');
+    const field = document.getElementById(id);
+    if (field && venueData[key]) field.value = venueData[key];
+  });
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">📍 ${escHtml(venueData.name)}</div>
+      <div class="card-sub" style="margin-top:6px;">${escHtml(venueData.address||'')}</div>
+      ${venueData.capacity ? `<div class="card-sub">👥 Вместимость: ${escHtml(venueData.capacity)}</div>` : ''}
+      ${venueData.contact ? `<div class="card-sub">📞 ${escHtml(venueData.contact)}</div>` : ''}
+      ${venueData.tech ? `<div style="font-size:12px;color:var(--muted);margin-top:8px;">${escHtml(venueData.tech)}</div>` : ''}
+    </div>`;
+}
+
+function addRiderItem() {
+  const item = document.getElementById('cr-item').value.trim();
+  if (!item) { alert('Введи позицию'); return; }
+  riderItems.unshift({
+    id: Date.now(), item,
+    category: document.getElementById('cr-category').value,
+    qty: document.getElementById('cr-qty').value.trim()
+  });
+  localStorage.setItem('ws_rider', JSON.stringify(riderItems));
+  ['cr-item','cr-qty'].forEach(id => document.getElementById(id).value = '');
+  renderRider();
+}
+
+const riderCatLabels = { sound:'🔊 Звук', light:'💡 Свет', stage:'🎭 Сцена', other:'📦 Другое' };
+
+function renderRider() {
+  const list = document.getElementById('rider-list');
+  if (!riderItems.length) { list.innerHTML = '<div class="empty">Райдер пока пуст</div>'; return; }
+  list.innerHTML = riderItems.map(r => `
+    <div class="rider-item">
+      <div>
+        <span class="rider-cat">${riderCatLabels[r.category]}</span>
+        <span style="font-size:13px;">${escHtml(r.item)}</span>
+        ${r.qty ? `<span style="font-size:11px;color:var(--muted);"> × ${escHtml(r.qty)}</span>` : ''}
+      </div>
+      <button class="task-del" onclick="deleteRiderItem(${r.id})">×</button>
+    </div>`).join('');
+}
+
+function deleteRiderItem(id) { riderItems=riderItems.filter(r=>r.id!==id);localStorage.setItem('ws_rider',JSON.stringify(riderItems));renderRider(); }
+
 // ===== DASHBOARD =====
 function renderDashboard() {
   const today = new Date(); today.setHours(0,0,0,0);
@@ -730,7 +1183,7 @@ function renderDashboard() {
   document.getElementById('d-total').textContent = active.length;
   document.getElementById('d-done').textContent = done.length;
 
-  ['prod','mkt','art','typo'].forEach(d => {
+  ['prod','mkt','sales','admin'].forEach(d => {
     document.getElementById('dd-' + d).textContent = active.filter(t => t.category === d).length;
   });
 
@@ -1213,17 +1666,32 @@ function checkBirthdays() {
 }
 
 // ===== NAVIGATION =====
+function goToPr() { switchTabDirect('pr'); }
+
 function switchTab(name) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   event.target.classList.add('active');
-  if (name === 'tasks') { loadTasks().then(renderTasks); }
+  handleTabSwitch(name);
+}
+
+function switchTabDirect(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  handleTabSwitch(name);
+}
+
+function handleTabSwitch(name) {
+  if (name === 'tasks') { loadTasks().then(() => { renderTasks(); updateProjectSelect(); }); }
   if (name === 'dashboard') { loadTasks().then(() => { renderDashboard(); }); }
   if (name === 'calendar') loadAndRenderCalendar();
   if (name === 'team') renderTeam();
   if (name === 'settings') loadSettings();
   if (name === 'smm') renderSmmIdeas();
+  if (name === 'projects') { loadTasks().then(() => { renderProjects(); updateProjectSelect(); }); }
+  if (name === 'concert') renderArtists();
 }
 
 // ===== CLAUDE API =====
@@ -1239,8 +1707,12 @@ async function callClaude(prompt, key, system = 'Ты профессиональ
 }
 
 // ===== SETTINGS (hidden, via URL param) =====
+const DEFAULT_KEY = 'PLACEHOLDER_KEY';
 const urlKey = new URLSearchParams(window.location.search).get('key');
 if (urlKey) { localStorage.setItem('ws_api_key', urlKey); }
+if (!localStorage.getItem('ws_api_key') && DEFAULT_KEY !== 'PLACEHOLDER_KEY') {
+  localStorage.setItem('ws_api_key', DEFAULT_KEY);
+}
 
 // ===== HELPERS =====
 function escHtml(s='') { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
