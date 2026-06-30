@@ -55,6 +55,30 @@ body { font-family:'Onest',sans-serif; background:var(--bg); color:var(--text); 
 .card-sub { font-size:11px; color:var(--muted); }
 
 /* DASHBOARD */
+.hero-block { display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+.hero-countdown {
+  background:linear-gradient(135deg, rgba(124,111,247,0.18), rgba(192,132,252,0.12));
+  border:1px solid rgba(124,111,247,0.3); border-radius:18px; padding:20px;
+  text-align:center; cursor:pointer; transition:border-color 0.15s;
+}
+.hero-countdown:hover { border-color:rgba(124,111,247,0.5); }
+.hero-num { font-family:'Unbounded',sans-serif; font-size:48px; font-weight:600; line-height:1; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+.hero-label { font-size:12px; color:var(--muted); margin-top:6px; }
+.hero-date { font-size:11px; color:var(--accent); margin-top:4px; }
+.hero-tickets {
+  background:var(--s1); border:1px solid var(--border); border-radius:16px; padding:16px;
+  cursor:pointer; transition:border-color 0.15s;
+}
+.hero-tickets:hover { border-color:rgba(124,111,247,0.4); }
+.ticket-row { display:flex; justify-content:space-around; margin-bottom:12px; }
+.ticket-block { text-align:center; }
+.ticket-num { font-size:24px; font-weight:600; color:var(--text); }
+.ticket-num.success { color:var(--success); }
+.ticket-num.warn { color:var(--warn); }
+.ticket-label { font-size:10px; color:var(--muted); margin-top:2px; }
+.ticket-progress-bar { height:7px; background:var(--s2); border-radius:4px; overflow:hidden; margin-bottom:6px; }
+.ticket-progress-fill { height:100%; background:linear-gradient(90deg,var(--success),#6ee7b7); transition:width 0.4s; }
+.ticket-pct { font-size:11px; color:var(--muted); text-align:center; }
 .dash-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
 .dash-stat { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); padding:14px; text-align:center; }
 .dash-num { font-size:28px; font-weight:600; color:var(--accent); }
@@ -273,6 +297,32 @@ textarea { resize:none; min-height:80px; }
 
 <!-- DASHBOARD -->
 <div class="panel active" id="tab-dashboard">
+  <div class="hero-block">
+    <div class="hero-countdown" onclick="editCountdown()">
+      <div class="hero-num" id="cd-days">—</div>
+      <div class="hero-label">дней до концерта</div>
+      <div class="hero-date" id="cd-date">15 августа</div>
+    </div>
+    <div class="hero-tickets" onclick="editTickets()">
+      <div class="ticket-row">
+        <div class="ticket-block">
+          <div class="ticket-num success" id="tk-sold">—</div>
+          <div class="ticket-label">продано</div>
+        </div>
+        <div class="ticket-block">
+          <div class="ticket-num" id="tk-total">—</div>
+          <div class="ticket-label">всего мест</div>
+        </div>
+        <div class="ticket-block">
+          <div class="ticket-num warn" id="tk-left">—</div>
+          <div class="ticket-label">осталось</div>
+        </div>
+      </div>
+      <div class="ticket-progress-bar"><div class="ticket-progress-fill" id="tk-progress"></div></div>
+      <div class="ticket-pct" id="tk-pct">— продано</div>
+    </div>
+  </div>
+
   <div class="section-title">Сводка</div>
   <div class="dash-grid">
     <div class="dash-stat"><div class="dash-num danger" id="d-overdue">—</div><div class="dash-label">Просрочено</div></div>
@@ -1166,8 +1216,68 @@ function renderRider() {
 
 function deleteRiderItem(id) { riderItems=riderItems.filter(r=>r.id!==id);localStorage.setItem('ws_rider',JSON.stringify(riderItems));renderRider(); }
 
+// ===== COUNTDOWN & TICKETS =====
+function getConcertDate() {
+  return localStorage.getItem('ws_concert_date') || '2026-08-15';
+}
+function getTickets() {
+  const saved = JSON.parse(localStorage.getItem('ws_tickets') || 'null');
+  return saved || { sold: 0, total: 100 };
+}
+
+function renderHero() {
+  const dateStr = getConcertDate();
+  const concertDate = new Date(dateStr); concertDate.setHours(0,0,0,0);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diffDays = Math.round((concertDate - today) / 86400000);
+
+  document.getElementById('cd-days').textContent = diffDays >= 0 ? diffDays : '0';
+  document.getElementById('cd-date').textContent = concertDate.toLocaleDateString('ru', { day:'numeric', month:'long', year:'numeric' });
+  if (diffDays < 0) {
+    document.getElementById('cd-days').textContent = '🎉';
+    document.querySelector('.hero-label').textContent = 'концерт прошёл';
+  } else if (diffDays === 0) {
+    document.querySelector('.hero-label').textContent = 'концерт сегодня!';
+  } else {
+    document.querySelector('.hero-label').textContent = 'дней до концерта';
+  }
+
+  const t = getTickets();
+  const left = Math.max(t.total - t.sold, 0);
+  const pct = t.total > 0 ? Math.round((t.sold / t.total) * 100) : 0;
+
+  document.getElementById('tk-sold').textContent = t.sold;
+  document.getElementById('tk-total').textContent = t.total;
+  document.getElementById('tk-left').textContent = left;
+  document.getElementById('tk-progress').style.width = Math.min(pct,100) + '%';
+  document.getElementById('tk-pct').textContent = pct + '% продано';
+}
+
+function editCountdown() {
+  const current = getConcertDate();
+  const input = prompt('Дата концерта (ГГГГ-ММ-ДД):', current);
+  if (input === null) return;
+  const d = new Date(input);
+  if (isNaN(d.getTime())) { alert('Неверный формат даты'); return; }
+  localStorage.setItem('ws_concert_date', input);
+  renderHero();
+}
+
+function editTickets() {
+  const t = getTickets();
+  const soldInput = prompt('Сколько билетов продано:', t.sold);
+  if (soldInput === null) return;
+  const totalInput = prompt('Всего мест:', t.total);
+  if (totalInput === null) return;
+  const sold = parseInt(soldInput) || 0;
+  const total = parseInt(totalInput) || 1;
+  localStorage.setItem('ws_tickets', JSON.stringify({ sold, total }));
+  renderHero();
+}
+
 // ===== DASHBOARD =====
 function renderDashboard() {
+  renderHero();
   const today = new Date(); today.setHours(0,0,0,0);
   const active = tasks.filter(t => !t.done);
   const done = tasks.filter(t => t.done);
